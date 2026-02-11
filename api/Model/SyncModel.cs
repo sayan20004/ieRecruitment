@@ -1,8 +1,8 @@
-namespace ieRecruitment.Models
+namespace api.Model
 {
-    public class OfflineSyncRequest
+    public class SyncModel
     {
-        public string CandidateId { get; set; }
-        public string LocalStorageData { get; set; } // The JSON string from local storage
+        public string? CandidateId { get; set; }
+        public string? LocalStorageData { get; set; }
     }
 }
