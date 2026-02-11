@@ -147,3 +147,4 @@
 /Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net10.0/ref/ieRecruitment.dll
 /Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net10.0/compressed/625vman25z-{0}-g06mtdwjcv-g06mtdwjcv.gz
 /Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net10.0/compressed/7ucwz0xwj0-{0}-98wcsltodp-98wcsltodp.gz
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net10.0/ieRecruitment.sourcelink.json
