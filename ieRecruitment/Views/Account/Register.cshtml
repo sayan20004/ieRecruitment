@@ -1,0 +1,223 @@
+@model ieRecruitment.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+}
+
+@section Styles {
+    <style>
+        .auth-card { width: min(640px, 94vw); }
+        .strength-message, .match-message {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .strength-message.weak { color: #dc3545; }
+        .strength-message.medium { color: #e9a23b; }
+        .strength-message.strong { color: #198754; }
+        .match-message.error { color: #dc3545; }
+        .match-message.success { color: #198754; }
+    </style>
+}
+
+<div class="auth-card">
+    <h2>Sign Up</h2>
+    <p class="subtitle">Create and manage invoices from one place.</p>
+
+    <form asp-action="Register" asp-controller="Account" method="post" enctype="multipart/form-data" id="signupForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-person input-icon"></i>
+                    <input asp-for="FirstName" type="text" placeholder="First Name" class="form-control" />
+                    <span asp-validation-for="FirstName" class="error-message"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-person input-icon"></i>
+                    <input asp-for="MiddleName" type="text" placeholder="Middle Name" class="form-control" />
+                    <span asp-validation-for="MiddleName" class="error-message"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-person input-icon"></i>
+                    <input asp-for="LastName" type="text" placeholder="Last Name" class="form-control" />
+                    <span asp-validation-for="LastName" class="error-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-7">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-envelope-fill input-icon"></i>
+                    <input asp-for="Email" type="email" placeholder="Email Address" class="form-control" />
+                    <span asp-validation-for="Email" class="error-message"></span>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-phone-fill input-icon"></i>
+                    <input asp-for="Mobile" type="tel" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                    <span asp-validation-for="Mobile" class="error-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label asp-for="Resume" class="form-label small fw-semibold text-muted">Upload Resume</label>
+                <input asp-for="Resume" type="file" accept=".pdf,.doc,.docx" class="form-control" />
+                <span asp-validation-for="Resume" class="error-message"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Photo" class="form-label small fw-semibold text-muted">Upload Photo</label>
+                <input asp-for="Photo" type="file" accept=".jpg,.jpeg,.png" class="form-control" />
+                <span asp-validation-for="Photo" class="error-message"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-lock-fill input-icon"></i>
+                    <input asp-for="Password" type="password" id="password" placeholder="Password" class="form-control" />
+                    <i class="bi bi-eye-slash toggle-password" data-target="#password" role="button" tabindex="0"></i>
+                </div>
+                <label class="strength-message" id="strength-status"></label>
+            </div>
+            <div class="col-md-6">
+                <div class="auth-input-group mb-0">
+                    <i class="bi bi-lock-fill input-icon"></i>
+                    <input asp-for="ConfirmPassword" type="password" id="confirmPassword" placeholder="Confirm Password" class="form-control" />
+                    <i class="bi bi-eye-slash toggle-password" data-target="#confirmPassword" role="button" tabindex="0"></i>
+                </div>
+                <label class="match-message" id="match-status"></label>
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="AgreeToTerms" type="checkbox" class="form-check-input" />
+            <label class="form-check-label small text-muted" asp-for="AgreeToTerms">
+                I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>.
+            </label>
+            <span asp-validation-for="AgreeToTerms" class="error-message d-block"></span>
+        </div>
+
+        <button class="auth-btn" type="submit">Sign Up</button>
+
+        <div class="auth-footer">Already a user? <a asp-action="Login" asp-controller="Account">Sign In</a></div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function () {
+            // Disable default validation messages for password fields
+            $('span[data-valmsg-for="Password"]').hide();
+            $('span[data-valmsg-for="ConfirmPassword"]').hide();
+
+            // Password toggle
+            $(document).on('click', '.toggle-password', function () {
+                const $input = $($(this).data('target'));
+                const type = $input.attr('type') === 'password' ? 'text' : 'password';
+                $input.attr('type', type);
+                $(this).toggleClass('bi-eye bi-eye-slash');
+            });
+
+            // Password strength
+            $('#password').on('input', function () {
+                const password = $(this).val();
+                const $status = $('#strength-status');
+                const $input = $(this);
+
+                $input.removeClass('input-valid input-invalid');
+                $status.removeClass('weak medium strong').text('');
+
+                if (!password) {
+                    return;
+                }
+
+                if (password.length < 6) {
+                    // Don't show message while typing, only on blur or submit
+                    return;
+                }
+
+                let strength = 0;
+                if (password.length >= 8) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/\d/.test(password)) strength++;
+                if (/[\W_]/.test(password)) strength++;
+
+                if (strength <= 2) {
+                    $status.text('Weak password').addClass('weak');
+                } else if (strength <= 3) {
+                    $status.text('Good password').addClass('medium');
+                    $input.addClass('input-valid');
+                } else {
+                    $status.text('Strong password').addClass('strong');
+                    $input.addClass('input-valid');
+                }
+
+                // Re-validate confirm password when password changes
+                if ($('#confirmPassword').val()) {
+                    $('#confirmPassword').trigger('input');
+                }
+            });
+
+            // Password match
+            $('#confirmPassword').on('input', function () {
+                const password = $('#password').val();
+                const confirmPassword = $(this).val();
+                const $input = $(this);
+                const $status = $('#match-status');
+
+                $input.removeClass('input-valid input-invalid');
+                $status.removeClass('success error').text('');
+
+                if (!confirmPassword) {
+                    $input.removeClass('input-valid input-invalid');
+                    return;
+                }
+
+                if (password === confirmPassword) {
+                    $status.text('✅ Passwords match').addClass('success');
+                    $input.addClass('input-valid');
+                } else {
+                    $status.text('❌ Passwords do not match').addClass('error');
+                    $input.addClass('input-invalid');
+                }
+            });
+
+            // Form validation before submit
+            $('#signupForm').on('submit', function(e) {
+                const password = $('#password').val();
+                const confirmPassword = $('#confirmPassword').val();
+                
+                if (password.length < 6) {
+                    e.preventDefault();
+                    $('#strength-status').text('Password must be at least 6 characters').addClass('weak');
+                    $('#password').addClass('input-invalid');
+                    return false;
+                }
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    $('#match-status').text('❌ Passwords do not match').addClass('error');
+                    $('#confirmPassword').addClass('input-invalid');
+                    return false;
+                }
+            });
+        });
+    </script>
+}

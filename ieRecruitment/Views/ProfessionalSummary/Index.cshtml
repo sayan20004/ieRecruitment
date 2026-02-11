@@ -1,0 +1,88 @@
+@model ieRecruitment.Models.ProfessionalSummaryViewModel
+
+@{
+    ViewData["Title"] = "Professional Summary";
+    Layout = "~/Views/Shared/_RecruitmentFormLayout.cshtml";
+}
+
+<div class="card p-4 h-100">
+    <h5 class="text-primary mb-3" style="font-weight: 600;">Professional Summary</h5>
+
+    <form asp-action="Index" asp-controller="ProfessionalSummary" method="post" id="professionalSummaryForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <textarea 
+                asp-for="Summary"
+                class="form-control" 
+                id="professionalSummary" 
+                rows="10" 
+                placeholder="Write a brief professional summary here..." 
+                style="min-height: 250px; resize: none; border-radius: 8px;">
+            </textarea>
+            <span asp-validation-for="Summary" class="text-danger small"></span>
+        </div>
+    </form>
+</div>
+
+@section PageScripts {
+    <script>
+        (() => {
+            'use strict';
+
+            const textarea = document.getElementById('professionalSummary');
+            let autoSaveTimeout;
+
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    clearTimeout(autoSaveTimeout);
+                    autoSaveTimeout = setTimeout(() => {
+                        localStorage.setItem('professionalSummaryDraft', textarea.value);
+                    }, 2000);
+                });
+
+                // Load draft on page load
+                const draft = localStorage.getItem('professionalSummaryDraft');
+                if (draft && textarea.value.trim() === '') {
+                    textarea.value = draft;
+                }
+            }
+
+            // Clear draft after successful submission
+            const form = document.getElementById('professionalSummaryForm');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    localStorage.removeItem('professionalSummaryDraft');
+                });
+            }
+
+            // Connect footer buttons to form
+            setTimeout(() => {
+                const btnNext = document.getElementById('btnNext');
+                const btnSave = document.getElementById('btnSave');
+
+                if (btnNext && form) {
+                    btnNext.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        form.submit();
+                    });
+                }
+
+                if (btnSave && form) {
+                    btnSave.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert('Professional summary saved successfully!');
+                        }).catch(err => {
+                            console.error('Save failed:', err);
+                        });
+                    });
+                }
+            }, 100);
+        })();
+    </script>
+}

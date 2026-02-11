@@ -1,0 +1,8 @@
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.csproj.AssemblyReference.cache
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.GeneratedMSBuildEditorConfig.editorconfig
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.AssemblyInfoInputs.cache
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.AssemblyInfo.cs
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.csproj.CoreCompileInputs.cache
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.MvcApplicationPartsAssemblyInfo.cache
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.RazorAssemblyInfo.cache
+/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/obj/Debug/net8.0/ieRecruitment.RazorAssemblyInfo.cs

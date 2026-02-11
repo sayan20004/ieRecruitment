@@ -1,0 +1,460 @@
+@model ieRecruitment.Models.EducationalDetailsViewModel
+
+@{
+    ViewData["Title"] = "Educational Details";
+    Layout = "~/Views/Shared/_RecruitmentFormLayout.cshtml";
+}
+
+@section PageStyles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        .accordion-compact .accordion-button { 
+            padding: .5rem .75rem; 
+            font-size: 0.9rem;
+        }
+        .accordion-compact .accordion-body { 
+            padding: .75rem; 
+        }
+        .accordion-compact .accordion-item { 
+            border: 0;
+            margin-bottom: 0.25rem;
+        }
+        .font-size-fixing {
+            font-size: 0.9rem;
+            color: #444;
+        }
+        .card-scroll {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+}
+
+<div class="card p-3 h-100">
+    <div class="fw-bold text-primary mb-3">Educational Details</div>
+
+    <form asp-action="Index" asp-controller="EducationalDetails" method="post" id="educationalDetailsForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Hidden field for additional qualifications -->
+        <input type="hidden" asp-for="AdditionalQualificationsJSON" id="additionalQualificationsJSON" />
+
+        <div class="card-scroll">
+            <!-- Education Accordion -->
+            <div class="accordion accordion-flush accordion-compact mb-3" id="educationAccordion">
+
+                <!-- PhD -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="eduPhdHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#eduPhd" aria-expanded="false" aria-controls="eduPhd">
+                            <i class="bi bi-mortarboard me-2"></i> <span class="font-size-fixing">PhD Degree</span>
+                        </button>
+                    </h2>
+                    <div id="eduPhd" class="accordion-collapse collapse" aria-labelledby="eduPhdHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <input asp-for="PhdUniversity" class="form-control form-control-sm" placeholder="University">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="PhdDepartment" class="form-control form-control-sm" placeholder="Department">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="PhdYear" class="form-control form-control-sm year-picker" placeholder="Year of Award" readonly>
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="PhdGrade" class="form-control form-control-sm" placeholder="Grade (if any)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Masters -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="eduMastersHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#eduMasters" aria-expanded="false" aria-controls="eduMasters">
+                            <i class="bi bi-mortarboard me-2"></i> <span class="font-size-fixing">Masters Degree</span>
+                        </button>
+                    </h2>
+                    <div id="eduMasters" class="accordion-collapse collapse" aria-labelledby="eduMastersHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <input asp-for="MastersUniversity" class="form-control form-control-sm" placeholder="University">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="MastersCollege" class="form-control form-control-sm" placeholder="College / Institute">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="MastersYear" class="form-control form-control-sm year-picker" placeholder="Passing Year" readonly>
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="MastersGrade" class="form-control form-control-sm" placeholder="Percentage / CGPA">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bachelors -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="eduBachelorsHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#eduBachelors" aria-expanded="false" aria-controls="eduBachelors">
+                            <i class="bi bi-mortarboard me-2"></i> <span class="font-size-fixing">Bachelors Degree</span>
+                        </button>
+                    </h2>
+                    <div id="eduBachelors" class="accordion-collapse collapse" aria-labelledby="eduBachelorsHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <input asp-for="BachelorsUniversity" class="form-control form-control-sm" placeholder="University *">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="BachelorsCollege" class="form-control form-control-sm" placeholder="College / Institute *">
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="BachelorsYear" class="form-control form-control-sm year-picker" placeholder="Passing Year *" readonly>
+                                </div>
+                                <div class="col-md-3">
+                                    <input asp-for="BachelorsGrade" class="form-control form-control-sm" placeholder="Percentage / CGPA *">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diploma -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="eduDiplomaHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#eduDiploma" aria-expanded="false" aria-controls="eduDiploma">
+                            <i class="bi bi-mortarboard me-2"></i> <span class="font-size-fixing">Diploma</span>
+                        </button>
+                    </h2>
+                    <div id="eduDiploma" class="accordion-collapse collapse" aria-labelledby="eduDiplomaHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input asp-for="DiplomaInstitute" class="form-control form-control-sm" placeholder="Institute / Board">
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="DiplomaYear" class="form-control form-control-sm year-picker" placeholder="Passing Year" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="DiplomaGrade" class="form-control form-control-sm" placeholder="Percentage / Grade">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class 12th -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="edu12thHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#edu12th" aria-expanded="false" aria-controls="edu12th">
+                            <i class="bi bi-mortarboard me-2"></i><span class="font-size-fixing">Class 12th</span>
+                        </button>
+                    </h2>
+                    <div id="edu12th" class="accordion-collapse collapse" aria-labelledby="edu12thHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input asp-for="TwelfthSchool" class="form-control form-control-sm" placeholder="School / Board *">
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="TwelfthYear" class="form-control form-control-sm year-picker" placeholder="Passing Year *" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="TwelfthGrade" class="form-control form-control-sm" placeholder="Percentage / Grade *">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class 10th -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="edu10thHead">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#edu10th" aria-expanded="false" aria-controls="edu10th">
+                            <i class="bi bi-mortarboard me-2"></i><span class="font-size-fixing">Class 10th</span>
+                        </button>
+                    </h2>
+                    <div id="edu10th" class="accordion-collapse collapse" aria-labelledby="edu10thHead">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input asp-for="TenthSchool" class="form-control form-control-sm" placeholder="School / Board *">
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="TenthYear" class="form-control form-control-sm year-picker" placeholder="Passing Year *" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="TenthGrade" class="form-control form-control-sm" placeholder="Percentage / Grade *">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /accordion -->
+
+            <!-- Add Another Button -->
+            <div class="text-start mb-3">
+                <button id="btnAddEdu" class="btn btn-outline-primary btn-sm" type="button">
+                    <i class="bi bi-plus-circle me-1"></i> Add Another
+                </button>
+            </div>
+
+            <!-- Project Details -->
+            <div class="fw-bold text-primary mb-2">Project Details</div>
+            <div class="row g-2 mb-3">
+                <div class="col-md-2">
+                    <input asp-for="VocationalTraining" class="form-control form-control-sm" placeholder="Vocational Training">
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="ProjectName" class="form-control form-control-sm" placeholder="Any Project">
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="ProjectTenure" class="form-control form-control-sm" placeholder="Tenure">
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="ProjectDescription" class="form-control form-control-sm" placeholder="Project Description">
+                </div>
+            </div>
+
+            <!-- Other Details -->
+            <div class="fw-bold text-primary mb-2">Other Details</div>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input asp-for="Memberships" class="form-control form-control-sm" placeholder="Memberships (Institutes / Clubs)">
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="OtherQualification" class="form-control form-control-sm" placeholder="Other Qualification">
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="ComputerProficiency" class="form-control form-control-sm" placeholder="Computer Proficiency">
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="OtherTraining" class="form-control form-control-sm" placeholder="Other Training / Courses (If any)">
+                </div>
+                <div class="col-md-8">
+                    <input asp-for="ExtraCurricular" class="form-control form-control-sm" placeholder="Extra Curricular Activities">
+                </div>
+            </div>
+        </div><!-- /card-scroll -->
+
+        <!-- Hidden Submit Button -->
+        <button type="submit" id="hiddenSubmit" style="display:none;"></button>
+    </form>
+</div>
+
+@section PageScripts {
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script>
+        (() => {
+            'use strict';
+
+            let additionalQualifications = [];
+
+            // Year Picker Initialization
+            function initYearPicker(el) {
+                if (!el || el.dataset.hasPicker === '1' || !window.$ || !$.fn.daterangepicker) return;
+                
+                $(el).daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    autoUpdateInput: true,
+                    locale: { format: 'YYYY' },
+                    minYear: 1950,
+                    maxYear: moment().year() + 5
+                }, function (start) {
+                    el.value = start.format('YYYY');
+                });
+                
+                el.dataset.hasPicker = '1';
+            }
+
+            // Initialize all existing year pickers
+            document.querySelectorAll('.year-picker').forEach(initYearPicker);
+
+            // Add Another Qualification
+            const accordion = document.getElementById('educationAccordion');
+            const btnAddEdu = document.getElementById('btnAddEdu');
+            let additionalCounter = 0;
+
+            btnAddEdu?.addEventListener('click', () => {
+                additionalCounter++;
+                const collapseId = 'eduExtra_' + additionalCounter;
+
+                const item = document.createElement('div');
+                item.className = 'accordion-item';
+                item.innerHTML = `
+                    <h2 class="accordion-header" id="${collapseId}Head">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                            <i class="bi bi-mortarboard me-2"></i> <span class="font-size-fixing">Additional Qualification #${additionalCounter}</span>
+                        </button>
+                    </h2>
+                    <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${collapseId}Head">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <input class="form-control form-control-sm additional-institute" placeholder="Institute / University">
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control form-control-sm additional-course" placeholder="Course / Degree">
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control form-control-sm year-picker additional-year" placeholder="Passing Year" readonly>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control form-control-sm additional-grade" placeholder="Percentage / CGPA">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-start">
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-qualification">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                accordion.appendChild(item);
+
+                // Initialize year picker for the new field
+                const newYearPicker = item.querySelector('.year-picker');
+                if (newYearPicker) {
+                    initYearPicker(newYearPicker);
+                }
+
+                // Add remove functionality
+                const removeBtn = item.querySelector('.remove-qualification');
+                removeBtn?.addEventListener('click', () => {
+                    item.remove();
+                    updateAdditionalQualifications();
+                });
+
+                // Add change listeners to update JSON
+                item.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('change', updateAdditionalQualifications);
+                });
+
+                // Auto-expand the new item
+                const newCollapse = new bootstrap.Collapse(document.getElementById(collapseId), { show: true });
+            });
+
+            // Update Additional Qualifications JSON
+            function updateAdditionalQualifications() {
+                const items = document.querySelectorAll('.accordion-item');
+                const data = [];
+
+                items.forEach(item => {
+                    const institute = item.querySelector('.additional-institute')?.value;
+                    const course = item.querySelector('.additional-course')?.value;
+                    const year = item.querySelector('.additional-year')?.value;
+                    const grade = item.querySelector('.additional-grade')?.value;
+
+                    if (institute || course || year || grade) {
+                        data.push({ institute, course, year, grade });
+                    }
+                });
+
+                const hiddenField = document.getElementById('additionalQualificationsJSON');
+                if (hiddenField) {
+                    hiddenField.value = JSON.stringify(data);
+                }
+            }
+
+            // Auto-save to localStorage
+            const form = document.getElementById('educationalDetailsForm');
+            if (form) {
+                const inputs = form.querySelectorAll('input');
+                
+                inputs.forEach(input => {
+                    // Load saved value
+                    const savedValue = localStorage.getItem('ed_' + input.id);
+                    if (savedValue && !input.value) {
+                        input.value = savedValue;
+                    }
+
+                    // Save on change
+                    input.addEventListener('change', () => {
+                        localStorage.setItem('ed_' + input.id, input.value);
+                    });
+                });
+
+                // Clear localStorage on submit
+                form.addEventListener('submit', () => {
+                    inputs.forEach(input => {
+                        localStorage.removeItem('ed_' + input.id);
+                    });
+                });
+            }
+
+            // Load existing additional qualifications if any
+            const existingData = document.getElementById('additionalQualificationsJSON').value;
+            if (existingData) {
+                try {
+                    const parsed = JSON.parse(existingData);
+                    parsed.forEach((qual, index) => {
+                        btnAddEdu?.click();
+                        setTimeout(() => {
+                            const items = document.querySelectorAll('.accordion-item');
+                            const lastItem = items[items.length - 1];
+                            if (lastItem) {
+                                lastItem.querySelector('.additional-institute').value = qual.institute || '';
+                                lastItem.querySelector('.additional-course').value = qual.course || '';
+                                lastItem.querySelector('.additional-year').value = qual.year || '';
+                                lastItem.querySelector('.additional-grade').value = qual.grade || '';
+                            }
+                        }, 100 * index);
+                    });
+                } catch (e) {
+                    console.error('Error parsing additional qualifications:', e);
+                }
+            }
+
+            // Connect footer buttons to form - with delay to ensure DOM is ready
+            setTimeout(() => {
+                const btnNext = document.getElementById('btnNext');
+                const btnSave = document.getElementById('btnSave');
+                const hiddenSubmit = document.getElementById('hiddenSubmit');
+                const form = document.getElementById('educationalDetailsForm');
+
+                if (btnNext && hiddenSubmit) {
+                    btnNext.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        hiddenSubmit.click();
+                    });
+                } else {
+                    console.error('Footer buttons not found:', { btnNext, hiddenSubmit });
+                }
+
+                if (btnSave && form) {
+                    btnSave.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert('Educational details saved successfully!');
+                        }).catch(err => {
+                            console.error('Save failed:', err);
+                        });
+                    });
+                }
+            }, 100);
+        })();
+    </script>
+}

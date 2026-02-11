@@ -1,0 +1,175 @@
+@* Chatbot Widget Component *@
+<style>
+    :root {
+        --color-brand: #0461a3;
+        --color-brand-dark: #003b5b;
+        --color-text: #0461A3;
+        --color-button: #003b5b;
+        --color-bg: #f5f7fb;
+        --color-card: #fff;
+        --color-ring: #d9e3f0;
+        --color-danger: #e11d48;
+        --gradient-brand: linear-gradient(135deg, var(--color-brand-dark), var(--color-brand));
+        --gradient-header: linear-gradient(135deg, var(--color-button) 0%, var(--color-brand) 100%);
+        --radius-lg: 18px;
+    }
+
+    /* FAB Wrapper */
+    .mc-fab-wrap {
+        position: fixed; right: 24px; bottom: 55px; z-index: 10001; display: inline-block;
+    }
+    .mc-fab {
+        position: relative; width: 50px; height: 50px; border-radius: 12px;
+        background: var(--gradient-brand); color: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 24px;
+        cursor: pointer; border: none;
+        box-shadow: 0 18px 30px rgba(0,59,91,.35), 0 4px 10px rgba(0,0,0,.18);
+        transition: .22s ease transform, .22s ease box-shadow, .22s ease filter;
+    }
+    .mc-fab:hover { transform: translateY(-2px); filter: saturate(1.05); }
+    .mc-fab { right: auto !important; bottom: auto !important; position: relative !important; z-index: 1; }
+
+    /* Badge */
+    .mc-badge {
+        position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px;
+        padding: 0 6px; display: inline-flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 700; line-height: 1; color: #fff;
+        background: var(--color-danger); border: 2px solid #fff; border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0,0,0,.15); z-index: 2;
+    }
+
+    /* Tooltip */
+    .mc-tip {
+        position: fixed; opacity: 0; transform: translateX(-35px) translateY(9px);
+        pointer-events: none; transition: .25s ease opacity, .25s ease transform; z-index: 10002;
+    }
+    .mc-tip.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .mc-tip .bubble {
+        background: #fff; border: 1px solid var(--color-ring); color: var(--color-text);
+        padding: 10px 12px; border-radius: 12px;
+        box-shadow: 0 12px 24px rgba(0,0,0,.12); font-size: 13px; line-height: 1.35;
+        display: inline-flex; gap: 8px; align-items: center; max-width: 240px;
+    }
+    .mc-tip .bubble i { color: var(--color-brand); }
+    .mc-tip .bubble strong { color: var(--color-button); font-weight: 700; }
+    .mc-tip .arrow {
+        position: absolute; right: -6px; top: 50%; transform: translateY(-50%) rotate(-45deg);
+        width: 12px; height: 12px; background: #fff;
+        border-top: 1px solid var(--color-ring); border-right: 1px solid var(--color-ring);
+        box-shadow: 3px -3px 8px rgba(0,0,0,.06);
+    }
+
+    /* Panel */
+    .mc-panel {
+        position: fixed; width: 390px; max-height: 72vh;
+        background: var(--color-card); border-radius: var(--radius-lg);
+        border: 1px solid var(--color-ring); box-shadow: 0 14px 30px rgba(0,0,0,.16);
+        overflow: hidden; transform: translateY(24px) scale(.98); opacity: 0;
+        pointer-events: none; transition: .25s ease transform, .25s ease opacity;
+        display: flex; flex-direction: column; z-index: 10000;
+    }
+    .mc-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+
+    /* Panel Header */
+    .mc-header {
+        display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+        background: var(--gradient-header); color: #fff; font-weight: 700;
+    }
+    .mc-title { flex: 1; display: flex; gap: 8px; align-items: center; }
+    #mc-close {
+        border: none; background: rgba(255,255,255,.2); color: #fff;
+        width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+        display: grid; place-items: center;
+    }
+    #mc-close:hover { background: rgba(255,255,255,.3); }
+
+    /* Panel Body */
+    .mc-body { padding: 14px 12px; overflow: auto; flex: 1; background: var(--color-bg); }
+    .mc-msg { display: flex; margin: 8px 0; }
+    .mc-msg.user { justify-content: flex-end; }
+    .mc-msg.assistant { justify-content: flex-start; }
+    .mc-bubble {
+        max-width: 78%; padding: 10px 14px; border-radius: 16px;
+        font-size: 14px; line-height: 1.35; white-space: pre-wrap;
+        word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;
+    }
+    .mc-msg.user .mc-bubble {
+        background: var(--gradient-brand); color: #fff;
+        border-bottom-right-radius: 6px; box-shadow: 0 10px 20px rgba(22,125,128,.28);
+    }
+    .mc-msg.assistant .mc-bubble {
+        background: #fff; color: var(--color-text);
+        border: 1px solid var(--color-ring); border-bottom-left-radius: 6px;
+        box-shadow: 0 10px 20px rgba(0,0,0,.08);
+    }
+
+    /* Panel Footer */
+    .mc-footer {
+        border-top: 1px solid var(--color-ring); padding: 12px; background: #fff;
+        display: flex; gap: 8px; align-items: center;
+    }
+    .mc-input {
+        flex: 1; padding: 10px 12px; border: 1px solid var(--color-ring);
+        border-radius: 12px; outline: none;
+    }
+    .mc-input:focus { border-color: var(--color-brand); box-shadow: 0 0 0 2px rgba(22,125,128,.2); }
+    .mc-send {
+        border: none; background: var(--color-button); color: #fff; border-radius: 12px;
+        padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        box-shadow: 0 8px 18px rgba(0,59,91,.35); transition: .2s ease transform, .2s ease box-shadow;
+    }
+    .mc-send:hover { transform: translateY(-1px); }
+
+    /* Mobile */
+    @@media (max-width: 460px) {
+        .mc-panel { width: calc(100vw - 24px); }
+        .mc-fab-wrap { right: 12px; bottom: 12px; }
+    }
+
+    /* Typing indicator dots */
+    .typing-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--color-brand); opacity: .4;
+        animation: typingBounce .6s ease-in-out infinite alternate;
+    }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+    @@keyframes typingBounce {
+        from { opacity: .3; transform: translateY(0); }
+        to   { opacity: 1;  transform: translateY(-4px); }
+    }
+</style>
+
+<div class="mc-fab-wrap">
+    <span id="mc-badge" class="mc-badge" hidden>0</span>
+    <button id="mendine-chatbot" 
+            class="mc-fab" 
+            style="position:fixed;right:24px;bottom:24px;width:50px;height:50px;border-radius:12px;border:none;cursor:move;color:#fff;background:linear-gradient(135deg,#003b5b,#0461a3);z-index:10001;display:flex;align-items:center;justify-content:center;box-shadow:0 18px 30px rgba(0,59,91,.35),0 4px 10px rgba(0,0,0,.18);touch-action:none;user-select:none;">
+        <i class="bi bi-robot"></i>
+    </button>
+    <div id="mc-tip" class="mc-tip" role="tooltip" aria-hidden="true">
+        <div class="bubble">
+            <i class="bi bi-chat-dots"></i>
+            <span><strong>Need help?</strong> Start a chat.</span>
+        </div>
+        <div class="arrow"></div>
+    </div>
+</div>
+
+<div id="mc-panel" class="mc-panel" role="dialog" aria-hidden="true" aria-label="Mendine Recruitment Assistant">
+    <div class="mc-header">
+        <div class="mc-title"><i class="bi bi-mortarboard"></i> Mendine Recruitment Assistant</div>
+        <button id="mc-close" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div id="mc-body" class="mc-body" role="log" aria-live="polite">
+        <div class="mc-msg assistant">
+            <div class="mc-bubble">Hi there! 👋 I'm the Mendine Recruitment Assistant. I can help you with filling out your application, navigating the form, or answering questions about the process. How can I help?</div>
+        </div>
+    </div>
+    <div class="mc-footer">
+        <input id="mc-input" class="mc-input" placeholder="Type your message…" />
+        <button id="mc-send" class="mc-send">
+            <i class="bi bi-send-fill"></i> Send
+        </button>
+    </div>
+</div>

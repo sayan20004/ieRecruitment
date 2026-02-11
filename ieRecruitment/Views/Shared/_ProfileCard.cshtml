@@ -1,0 +1,110 @@
+@{
+    // Calculate progress based on current controller
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var progressPercentage = currentController switch
+    {
+        "RecruitmentForm" => 0,
+        "ProfessionalSummary" => 14,
+        "PersonalDetails" => 29,
+        "FamilyDetails" => 43,
+        "EducationalDetails" => 57,
+        "WorkExperience" => 71,
+        "OtherDetails" => 86,
+        _ => 0
+    };
+}
+
+@* Profile Card Component - Shows candidate profile information *@
+<style>
+    /* Profile Card */
+    .profile-card { border-radius: 16px; overflow: hidden; }
+    .profile-header {
+        background: #fff; border-bottom: 2px solid #dbe3eb;
+        border-radius: 16px 16px 0 0; padding: 1.5rem 1rem; text-align: center; color: #0f172a;
+    }
+    .icon-circle {
+        width: 28px; height: 28px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+    }
+    .edit-badge {
+        right: 0; bottom: 0; width: 32px; height: 32px; border-radius: 50%;
+        background: #fff; border: 1px solid #ccc; display: grid; place-items: center;
+        cursor: pointer; transform: translate(20%, -20%); box-shadow: 0 2px 2px rgba(83,83,83,.15);
+    }
+    .edit-badge i { color: #167d80; font-size: 14px; }
+
+    /* Progress Ring */
+    .progress-avatar { width: 132px; height: 132px; }
+    .profile-avatar {
+        width: 96px; height: 96px; object-fit: cover;
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    }
+    .progress-ring { display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,.12)); }
+    .ring-track { fill: none; stroke: #d9e3f0; stroke-width: 10; }
+    .ring-progress {
+        fill: none; stroke: #0461a3; stroke-width: 7; stroke-linecap: round;
+        transform: rotate(-90deg); transform-origin: 50% 50%;
+        transition: stroke-dashoffset .6s ease, stroke .3s ease;
+    }
+    .progress-badge {
+        position: absolute; right: -4px; bottom: 6px; min-width: 44px; height: 28px;
+        padding: 0 8px; border-radius: 999px; background: #fff; border: 1px solid #d9e3f0;
+        color: #0461A3; font-weight: 700; font-size: 13px;
+        display: inline-flex; align-items: center; justify-content: center;
+        box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+    .progress-complete .ring-progress { stroke: #10b981; }
+</style>
+
+<div class="col-md-3 mb-3 mb-lg-0 mb-md-0 mb-sm-3">
+    <div class="card profile-card shadow-sm h-100">
+        <div class="profile-header text-center p-4">
+            <div class="position-relative d-inline-block">
+                <div class="position-relative d-inline-block progress-avatar" data-progress="@progressPercentage">
+                    <!-- Progress ring -->
+                    <svg class="progress-ring" width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">
+                        <circle class="ring-track" cx="66" cy="66" r="58"></circle>
+                        <circle class="ring-progress" cx="66" cy="66" r="58"></circle>
+                    </svg>
+                    <!-- Avatar -->
+                    <img id="profilePreview" 
+                         src="~/img/profile-pic.jpg" 
+                         class="rounded-circle border border-3 border-white profile-avatar" 
+                         alt="Profile Photo" 
+                         width="96" 
+                         height="96" 
+                         onerror="this.src='https://via.placeholder.com/96'" />
+                    <!-- Percentage badge -->
+                    <div class="progress-badge" id="profilePercent">@progressPercentage%</div>
+                </div>
+            </div>
+            <h5 class="fw-bold mt-3 mb-0">
+                Vaishali Sen
+                <i class="bi bi-patch-check-fill text-success ms-1" aria-hidden="true"></i>
+            </h5>
+            <small>Software Engineer</small>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled small mb-0">
+                <li class="d-flex align-items-center gap-2 mb-3">
+                    <div class="icon-circle bg-white border border-2 border-primary text-primary">
+                        <i class="bi bi-telephone" aria-hidden="true"></i>
+                    </div>
+                    <span>(123) 456-7890</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-3">
+                    <div class="icon-circle bg-white border border-2 border-primary text-primary">
+                        <i class="bi bi-envelope" aria-hidden="true"></i>
+                    </div>
+                    <span class="text-break">vaishali.sen@companyname.co.in</span>
+                </li>
+                <li class="d-flex align-items-center gap-2">
+                    <div class="icon-circle bg-white border border-2 border-primary text-primary">
+                        <i class="bi bi-card-heading" aria-hidden="true"></i>
+                    </div>
+                    <span>Business ID: 1234-ABC</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

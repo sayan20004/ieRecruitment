@@ -1,0 +1,885 @@
+@model ieRecruitment.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "My Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Font */
+        @@font-face {
+            font-family: 'Manrope';
+            src: url('/fonts/Manrope-Medium.woff2') format('woff2'),
+                 url('/fonts/Manrope-Medium.woff') format('woff');
+            font-weight: 500; font-style: normal; font-display: swap;
+        }
+
+        /* Base */
+        :root { --header-h: 56px; --sidebar-w: 240px; }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0; font-size: .85rem; background: #f8f9fa; overflow: hidden;
+            font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* App Frame */
+        #app { height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Main Container with Sidebar */
+        .main-container {
+            display: flex; flex: 1; overflow: hidden;
+            margin-top: var(--header-h);
+        }
+
+        /* Header */
+        header.app-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1040;
+            height: var(--header-h); display: flex; align-items: center;
+            background: #fff; border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        /* Left Sidebar Navigation */
+        .dashboard-sidebar {
+            width: var(--sidebar-w); background: #fff;
+            border-right: 1px solid #e9ecef; overflow-y: auto;
+            flex-shrink: 0; display: flex; flex-direction: column;
+        }
+        .dashboard-sidebar::-webkit-scrollbar { width: 6px; }
+        .dashboard-sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+        /* Sidebar Header */
+        .sidebar-header {
+            padding: 20px; border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+            color: #fff;
+        }
+        .sidebar-header h6 {
+            margin: 0; font-size: .9rem; font-weight: 600;
+            opacity: .9; margin-bottom: 4px;
+        }
+        .sidebar-header .user-name {
+            font-size: 1.1rem; font-weight: 700; margin: 0;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            flex: 1; padding: 12px 0;
+        }
+        .sidebar-nav-item {
+            display: block; padding: 12px 20px; text-decoration: none;
+            color: #64748b; transition: all .2s; border-left: 3px solid transparent;
+            display: flex; align-items: center; gap: 12px; font-size: .85rem;
+        }
+        .sidebar-nav-item i {
+            font-size: 1.2rem; width: 24px; text-align: center;
+        }
+        .sidebar-nav-item:hover {
+            background: #f8f9fa; color: #0461A3;
+        }
+        .sidebar-nav-item.active {
+            background: #e0f2fe; color: #0461A3; border-left-color: #0461A3;
+            font-weight: 600;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 16px 20px; border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+        .sidebar-footer .btn {
+            width: 100%; font-size: .8rem;
+        }
+
+        /* Content Area */
+        #content {
+            flex: 1; overflow-y: auto; padding: 24px;
+            background: #f8f9fa;
+        }
+        #content::-webkit-scrollbar { width: 8px; }
+        #content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+        /* Text Primary Override */
+        .text-primary { color: #0461A3 !important; }
+
+        /* Cards */
+        .card {
+            background: #fff; border: 1px solid #d9e3f0; border-radius: .75rem;
+            padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.03);
+        }
+        .card h6, .fw-bold { margin-bottom: 6px; font-size: .9rem; }
+
+        /* Mobile Sidebar Toggle */
+        .sidebar-toggle {
+            display: none; position: fixed; bottom: 20px; left: 20px;
+            z-index: 1050; width: 50px; height: 50px; border-radius: 50%;
+            background: #0461A3; color: #fff; border: none;
+            box-shadow: 0 4px 12px rgba(4,97,163,.3);
+            font-size: 1.2rem; cursor: pointer;
+        }
+
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+            z-index: 1030; opacity: 0; transition: opacity .3s;
+        }
+        .sidebar-overlay.show {
+            display: block; opacity: 1;
+        }
+
+        /* Dashboard Navigation Menu - REMOVED */
+        .dashboard-nav { display: none; }
+
+        /* Application Selector */
+        .app-selector {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+            color: #fff; padding: 16px 20px; border-radius: .75rem;
+            margin-bottom: 16px; box-shadow: 0 4px 12px rgba(12,74,110,.15);
+        }
+        .app-selector-dropdown {
+            background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+            color: #fff; border-radius: 8px; padding: 8px 12px;
+            font-size: .85rem; font-weight: 600; cursor: pointer;
+            transition: all .2s;
+        }
+        .app-selector-dropdown:hover {
+            background: rgba(255,255,255,.25);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 600;
+        }
+        .status-applied     { background: #cffafe; color: #0891b2; }
+        .status-review      { background: #fef3c7; color: #b45309; }
+        .status-shortlisted { background: #ede9fe; color: #7c3aed; }
+        .status-interview   { background: #e0f2fe; color: #0461A3; }
+        .status-selected    { background: #dcfce7; color: #16a34a; }
+        .status-rejected    { background: #fee2e2; color: #dc2626; }
+        .status-hold        { background: #f1f5f9; color: #64748b; }
+
+        /* Stat Card */
+        .stat-card {
+            background: #fff; border: 1px solid #d9e3f0; border-radius: .75rem;
+            padding: 16px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.03); transition: all .2s;
+        }
+        .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-2px); }
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: #0c4a6e; margin: 0; }
+        .stat-label { font-size: .75rem; color: #64748b; margin: 0; }
+
+        /* Scrollable Card Body */
+        .scrollable-card-body {
+            flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden;
+            max-height: 400px;
+        }
+        .scrollable-card-body::-webkit-scrollbar { width: 6px; }
+        .scrollable-card-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
+
+        /* Remove Text Shadows */
+        .app-header, .app-header *, h1, h2, h3, h4, h5, h6, p, label, small, span, a, .btn { text-shadow: none !important; }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            :root { --sidebar-w: 280px; }
+            
+            .dashboard-sidebar {
+                position: fixed; left: 0; top: var(--header-h); bottom: 0;
+                z-index: 1040; transform: translateX(-100%);
+                transition: transform .3s ease;
+            }
+            .dashboard-sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-toggle {
+                display: flex; align-items: center; justify-content: center;
+            }
+            #content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    @* Render Recruitment Header Component *@
+    @await Html.PartialAsync("_RecruitmentHeader")
+
+    @* Mobile Sidebar Toggle *@
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+    </button>
+
+    @* Sidebar Overlay for Mobile *@
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    @* Main Container with Sidebar *@
+    <div class="main-container">
+        @* Left Sidebar Navigation *@
+        <aside class="dashboard-sidebar" id="dashboardSidebar">
+            @* Sidebar Header *@
+            <div class="sidebar-header">
+                <h6>Welcome back,</h6>
+                <div class="user-name">@Model.FullName.Split(' ')[0]</div>
+            </div>
+
+            @* Sidebar Navigation *@
+            <nav class="sidebar-nav">
+                <a href="#overview" class="sidebar-nav-item active" data-tab="overview">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#applications" class="sidebar-nav-item" data-tab="applications">
+                    <i class="bi bi-briefcase"></i>
+                    <span>My Applications</span>
+                </a>
+                <a href="#interviews" class="sidebar-nav-item" data-tab="interviews">
+                    <i class="bi bi-camera-video"></i>
+                    <span>Interviews</span>
+                </a>
+                <a href="#mock-interview" class="sidebar-nav-item" data-tab="mock">
+                    <i class="bi bi-robot"></i>
+                    <span>Mock Interview</span>
+                </a>
+                <a href="#documents" class="sidebar-nav-item" data-tab="documents">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Documents</span>
+                </a>
+                <a href="#profile" class="sidebar-nav-item" data-tab="profile">
+                    <i class="bi bi-person-badge"></i>
+                    <span>My Details</span>
+                </a>
+            </nav>
+
+            @* Sidebar Footer *@
+            <div class="sidebar-footer">
+                <a href="/RecruitmentForm" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil-square me-1"></i>Edit Application
+                </a>
+                <a href="/" class="btn btn-outline-secondary btn-sm mt-2">
+                    <i class="bi bi-box-arrow-left me-1"></i>Exit Dashboard
+                </a>
+            </div>
+        </aside>
+
+        @* Content Area *@
+        <main id="content">
+        @* Application Selector (if multiple applications) *@
+        @if (Model.Applications.Count > 1)
+        {
+            <div class="app-selector">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <small style="opacity:.85;">Viewing Application</small>
+                        <h6 class="mb-0 mt-1 fw-bold">@Model.Active.Position</h6>
+                    </div>
+                    <select class="app-selector-dropdown" id="appSelector">
+                        @foreach (var app in Model.Applications)
+                        {
+                            <option value="@app.Id" selected="@(app.Id == Model.ActiveApplicationId)">
+                                @app.Position (@app.CandidateCode)
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        @* Tab Content *@
+        <div id="tabContent">
+            @* Overview Tab *@
+            <div class="tab-pane active" id="overview-tab">
+                @* Welcome Banner *@
+                <div class="card p-3 mb-3" style="background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%); border-left: 4px solid #0461A3;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h5 class="mb-1 fw-bold text-primary">Welcome back, @Model.FullName.Split(' ')[0]!</h5>
+                            <p class="mb-0 text-muted" style="font-size:.85rem;">Here's an overview of your recruitment application progress.</p>
+                        </div>
+                        @if (Model.Applications.Count > 1)
+                        {
+                            <div class="badge bg-primary" style="font-size:.8rem;">
+                                @Model.Applications.Count Applications
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* Stats Row *@
+                <div class="row g-3 mb-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#e0f2fe;color:#0461A3;">
+                                <i class="bi bi-clipboard-check"></i>
+                            </div>
+                            <div>
+                                <p class="stat-value">@Model.Active.FormSectionsCompleted/@Model.Active.TotalFormSections</p>
+                                <p class="stat-label">Sections Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#dcfce7;color:#16a34a;">
+                                <i class="bi bi-file-earmark-arrow-up"></i>
+                            </div>
+                            <div>
+                                <p class="stat-value">@Model.Active.TotalDocumentsUploaded</p>
+                                <p class="stat-label">Documents Uploaded</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            @{
+                                var statusClass = Model.Active.ApplicationStatus switch {
+                                    "Applied" => "status-applied",
+                                    "Under Review" => "status-review",
+                                    "Shortlisted" => "status-shortlisted",
+                                    "Interview Scheduled" => "status-interview",
+                                    "Selected" => "status-selected",
+                                    "Rejected" => "status-rejected",
+                                    "On Hold" => "status-hold",
+                                    _ => "status-review"
+                                };
+                            }
+                            <div class="stat-icon" style="background:#fef3c7;color:#b45309;">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                            <div>
+                                <span class="status-badge @statusClass">
+                                    <i class="bi bi-circle-fill" style="font-size:.35rem;"></i> @Model.Active.ApplicationStatus
+                                </span>
+                                <p class="stat-label mt-1">Current Status</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#ede9fe;color:#7c3aed;">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div>
+                                <p class="stat-value" style="font-size:1rem;">@(Model.Active.LastUpdated?.ToString("dd MMM") ?? "—")</p>
+                                <p class="stat-label">Last Updated</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Main Content Row *@
+                <div class="row g-3">
+                    @* Upcoming Interview *@
+                    <div class="col-lg-8">
+                        <div class="card p-3 h-100">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h6 class="fw-bold text-primary mb-0">
+                                    <i class="bi bi-camera-video me-2"></i>Upcoming Interview
+                                </h6>
+                                @if (Model.Active.UpcomingInterview != null)
+                                {
+                                    <span class="status-badge status-interview">
+                                        <i class="bi bi-circle-fill" style="font-size:.35rem;"></i> @Model.Active.UpcomingInterview.Status
+                                    </span>
+                                }
+                            </div>
+                            <div class="scrollable-card-body">
+                                @if (Model.Active.UpcomingInterview != null)
+                                {
+                                    var iv = Model.Active.UpcomingInterview;
+                                    <div class="card p-3" style="background: linear-gradient(135deg, #fafcff 0%, #f0f7ff 100%); border: 1.5px solid #e0f2fe;">
+                                        <span class="badge bg-primary mb-2" style="width:fit-content;">@iv.Round</span>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.82rem;">
+                                                    <i class="bi bi-calendar-event text-primary"></i>
+                                                    <span>@iv.ScheduledDate.ToString("dddd, dd MMMM yyyy")</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.82rem;">
+                                                    <i class="bi bi-clock text-primary"></i>
+                                                    <span>@iv.Time</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.82rem;">
+                                                    <i class="bi bi-@(iv.Type == "Video Call" ? "camera-video" : iv.Type == "Phone" ? "telephone" : "geo-alt") text-primary"></i>
+                                                    <span>@iv.Type</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+                                                    <i class="bi bi-person text-primary"></i>
+                                                    <span>@iv.InterviewerName — <em class="text-muted">@iv.InterviewerRole</em></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                @if (!string.IsNullOrEmpty(iv.MeetingLink))
+                                                {
+                                                    <a href="@iv.MeetingLink" target="_blank" class="btn btn-primary w-100 mb-2" style="font-size:.8rem;">
+                                                        <i class="bi bi-box-arrow-up-right me-1"></i>Join Meeting
+                                                    </a>
+                                                }
+                                                @if (iv.CanReschedule)
+                                                {
+                                                    <button class="btn btn-outline-secondary w-100" style="font-size:.8rem;">
+                                                        <i class="bi bi-calendar2-range me-1"></i>Reschedule
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-calendar-x text-muted" style="font-size:3rem;"></i>
+                                        <p class="text-muted mt-3 mb-0">No upcoming interviews scheduled yet.</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Quick Info *@
+                    <div class="col-lg-4">
+                        <div class="card p-3 h-100">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Application Info
+                            </h6>
+                            <div class="scrollable-card-body">
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Candidate Code</small>
+                                    <strong class="text-primary">@Model.Active.CandidateCode</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Position</small>
+                                    <strong>@Model.Active.Position</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Department</small>
+                                    <strong>@Model.Active.Department</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Applied Date</small>
+                                    <strong>@Model.Active.AppliedDate.ToString("dd MMMM yyyy")</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">Form Progress</small>
+                                    <div class="progress" style="height:8px;">
+                                        <div class="progress-bar bg-success" style="width:@(Model.Active.FormCompletionPercent)%"></div>
+                                    </div>
+                                    <small class="text-muted">@Model.Active.FormCompletionPercent% Complete</small>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.Active.HRContactName))
+                                {
+                                    <hr class="my-3">
+                                    <div>
+                                        <small class="text-muted d-block mb-2">HR Contact</small>
+                                        <strong class="d-block">@Model.Active.HRContactName</strong>
+                                        @if (!string.IsNullOrEmpty(Model.Active.HRContactEmail))
+                                        {
+                                            <a href="mailto:@Model.Active.HRContactEmail" class="text-primary text-decoration-none d-block mt-1" style="font-size:.8rem;">
+                                                <i class="bi bi-envelope me-1"></i>@Model.Active.HRContactEmail
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.Active.HRContactPhone))
+                                        {
+                                            <a href="tel:@Model.Active.HRContactPhone" class="text-primary text-decoration-none d-block mt-1" style="font-size:.8rem;">
+                                                <i class="bi bi-telephone me-1"></i>@Model.Active.HRContactPhone
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Applications Tab *@
+            <div class="tab-pane" id="applications-tab" style="display:none;">
+                <div class="card p-3">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i class="bi bi-briefcase me-2"></i>All Applications (@Model.Applications.Count)
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th>Applied</th>
+                                    <th>Progress</th>
+                                    <th>Documents</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in Model.Applications)
+                                {
+                                    var appStatusCls = app.ApplicationStatus switch {
+                                        "Applied" => "status-applied",
+                                        "Under Review" => "status-review",
+                                        "Shortlisted" => "status-shortlisted",
+                                        "Interview Scheduled" => "status-interview",
+                                        "Selected" => "status-selected",
+                                        "Rejected" => "status-rejected",
+                                        "On Hold" => "status-hold",
+                                        _ => "status-review"
+                                    };
+                                    <tr>
+                                        <td>
+                                            <strong>@app.Position</strong><br>
+                                            <small class="text-muted">@app.Department</small>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge @appStatusCls">
+                                                <i class="bi bi-circle-fill" style="font-size:.35rem;"></i> @app.ApplicationStatus
+                                            </span>
+                                        </td>
+                                        <td>@app.AppliedDate.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            <div class="progress" style="height:6px;width:80px;">
+                                                <div class="progress-bar bg-success" style="width:@(app.FormCompletionPercent)%"></div>
+                                            </div>
+                                            <small class="text-muted">@app.FormCompletionPercent%</small>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-file-earmark-check text-success me-1"></i>
+                                            @app.TotalDocumentsUploaded
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="switchApplication('@app.Id')">
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @* Interviews Tab *@
+            <div class="tab-pane" id="interviews-tab" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card p-3">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-calendar-check me-2"></i>Upcoming Interviews
+                            </h6>
+                            @if (Model.Active.UpcomingInterview != null)
+                            {
+                                <p>Interview details here...</p>
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-calendar-x text-muted" style="font-size:2.5rem;"></i>
+                                    <p class="text-muted mt-2 mb-0">No upcoming interviews</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-3">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-clock-history me-2"></i>Past Interviews
+                            </h6>
+                            @if (Model.Active.PastInterviews.Any())
+                            {
+                                <p>Past interview list here...</p>
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-calendar2-x text-muted" style="font-size:2.5rem;"></i>
+                                    <p class="text-muted mt-2 mb-0">No past interviews</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Mock Interview Tab *@
+            <div class="tab-pane" id="mock-tab" style="display:none;">
+                <div class="card p-3">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i class="bi bi-robot me-2"></i>AI Mock Interview
+                    </h6>
+                    @if (Model.Active.MockInterview != null && Model.Active.MockInterview.IsAvailable)
+                    {
+                        var mock = Model.Active.MockInterview;
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="bi bi-headset" style="font-size:4rem;color:#0461A3;"></i>
+                            </div>
+                            <h5 class="fw-bold">@mock.Title</h5>
+                            <p class="text-muted">@mock.Description</p>
+                            <div class="d-flex justify-content-center gap-4 my-4">
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.5rem;color:#0461A3;">@mock.QuestionsCount</div>
+                                    <small class="text-muted">Questions</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.5rem;color:#0461A3;">@(mock.DurationMinutes)m</div>
+                                    <small class="text-muted">Duration</small>
+                                </div>
+                                @if (mock.LastScore.HasValue)
+                                {
+                                    <div>
+                                        <div class="fw-bold" style="font-size:1.5rem;color:#16a34a;">@mock.LastScore%</div>
+                                        <small class="text-muted">Last Score</small>
+                                    </div>
+                                }
+                            </div>
+                            <p class="text-muted mb-3">Attempts: @mock.AttemptsUsed / @mock.MaxAttempts</p>
+                            @if (mock.AttemptsUsed < mock.MaxAttempts)
+                            {
+                                <button class="btn btn-primary btn-lg px-5">
+                                    <i class="bi bi-play-circle me-2"></i>Start Mock Interview
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-lg px-5" disabled>
+                                    All Attempts Used
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-robot text-muted" style="font-size:3rem;"></i>
+                            <p class="text-muted mt-3 mb-0">Mock interview not available yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Documents Tab *@
+            <div class="tab-pane" id="documents-tab" style="display:none;">
+                <div class="card p-3">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i class="bi bi-file-earmark-text me-2"></i>Uploaded Documents (@Model.Active.Documents.Count)
+                    </h6>
+                    @if (Model.Active.Documents.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Document Name</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Uploaded</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var doc in Model.Active.Documents)
+                                    {
+                                        var docStatusCls = doc.Status switch {
+                                            "Verified" => "success",
+                                            "Pending" => "warning",
+                                            "Rejected" => "danger",
+                                            _ => "secondary"
+                                        };
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                                @doc.Name
+                                            </td>
+                                            <td>@doc.Type</td>
+                                            <td>@doc.FileSize</td>
+                                            <td>@doc.UploadedDate.ToString("dd MMM yyyy")</td>
+                                            <td>
+                                                <span class="badge bg-@docStatusCls">@doc.Status</span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(doc.DownloadUrl))
+                                                {
+                                                    <a href="@doc.DownloadUrl" class="btn btn-sm btn-outline-primary" download>
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-file-earmark-x text-muted" style="font-size:3rem;"></i>
+                            <p class="text-muted mt-3 mb-0">No documents uploaded yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Profile Tab *@
+            <div class="tab-pane" id="profile-tab" style="display:none;">
+                <div class="card p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h6 class="fw-bold text-primary mb-0">
+                            <i class="bi bi-person-badge me-2"></i>My Details
+                        </h6>
+                        <a href="/RecruitmentForm" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil-square me-1"></i>Edit Application
+                        </a>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Full Name</small>
+                                <strong>@Model.FullName</strong>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Email</small>
+                                <strong>@Model.Email</strong>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Phone</small>
+                                <strong>@Model.Phone</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Candidate Code</small>
+                                <strong class="text-primary">@Model.Active.CandidateCode</strong>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Position</small>
+                                <strong>@Model.Active.Position</strong>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Department</small>
+                                <strong>@Model.Active.Department</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+
+    @* Render Chatbot Widget Component *@
+    @await Html.PartialAsync("_ChatbotWidget")
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+<script>
+        (() => {
+            'use strict';
+
+            // Sidebar Navigation
+            const navLinks = document.querySelectorAll('.sidebar-nav-item');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            const sidebar = document.getElementById('dashboardSidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            // Tab Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.dataset.tab;
+
+                    // Update active nav link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    // Show corresponding tab
+                    tabPanes.forEach(pane => {
+                        pane.style.display = 'none';
+                    });
+                    const targetPane = document.getElementById(tabId + '-tab');
+                    if (targetPane) {
+                        targetPane.style.display = 'block';
+                    }
+
+                    // Update URL hash
+                    window.location.hash = tabId;
+
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('show');
+                        sidebarOverlay.classList.remove('show');
+                    }
+                });
+            });
+
+            // Mobile Sidebar Toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.add('show');
+                    sidebarOverlay.classList.add('show');
+                });
+            }
+
+            // Close sidebar when clicking overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                });
+            }
+
+            // Application Selector
+            const appSelector = document.getElementById('appSelector');
+            if (appSelector) {
+                appSelector.addEventListener('change', (e) => {
+                    window.location.href = '/Dashboard?appId=' + e.target.value;
+                });
+            }
+
+            // Switch Application Function
+            window.switchApplication = function(appId) {
+                window.location.href = '/Dashboard?appId=' + appId;
+            };
+
+            // Load tab from URL hash
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const targetLink = document.querySelector(`[data-tab="${hash}"]`);
+                if (targetLink) {
+                    targetLink.click();
+                }
+            }
+
+            // Animate stat cards on load
+            document.querySelectorAll('.stat-card').forEach((card, i) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(15px)';
+                card.style.transition = 'opacity .4s ease, transform .4s ease';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + i * 80);
+            });
+        })();
+    </script>
+</body>
+</html>

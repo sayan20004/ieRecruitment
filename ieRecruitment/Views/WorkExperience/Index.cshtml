@@ -1,0 +1,1300 @@
+@model ieRecruitment.Models.WorkExperienceViewModel
+
+@{
+    ViewData["Title"] = "Work Experience";
+    Layout = "~/Views/Shared/_RecruitmentFormLayout.cshtml";
+}
+
+@section PageStyles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Section Titles */
+        .section-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        /* Muted Info Bar */
+        .muted-bar {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.25rem;
+            margin: 0.5rem 0 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Required Field Indicator */
+        .req::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* Readonly Fields */
+        .readonly {
+            background: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        /* Hints */
+        .hint {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        /* Scrollable Body */
+        .scroll-body {
+            max-height: calc(100vh - 360px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            padding-right: 0.25rem;
+        }
+
+        /* Custom Scrollbar */
+        .scroll-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .scroll-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .scroll-body::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Icon Buttons */
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Fieldset Styling */
+        fieldset.fieldset {
+            border: 1px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            background: #fafbfc;
+            transition: all 0.2s ease;
+        }
+
+        fieldset.fieldset:hover {
+            border-color: #94a3b8;
+            background: #ffffff;
+        }
+
+        fieldset.fieldset > legend {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        /* Enhanced Card Styling */
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s ease;
+        }
+
+        @* .card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        } *@
+
+        /* Form Controls Enhancement */
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Button Enhancements */
+        .btn {
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Internship Details Section */
+        #internDetails {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #internDetails .form-label {
+            margin-bottom: 0.375rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #334155;
+        }
+
+        #internDetails .form-control.form-control-sm {
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+        }
+
+        #internDetails .form-text {
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        #internDetails .input-group-text {
+            padding: 0.375rem 0.625rem;
+            font-size: 0.875rem;
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        #internDetails .table th,
+        #internDetails .table td {
+            vertical-align: middle;
+            padding: 0.75rem 0.5rem;
+        }
+
+        #internDetails .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        #internDetails td:nth-child(5),
+        #internDetails td:nth-child(6) {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Table Enhancements */
+        .table {
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* File Upload Styling */
+        .upload-letter {
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .upload-letter:hover {
+            border-color: #3b82f6;
+        }
+
+        .file-preview a {
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .file-preview a:hover {
+            color: #1e40af;
+            text-decoration: underline;
+        }
+
+        /* Date Picker Icon */
+        .position-relative i.bi-calendar-event {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* Radio Button Styling */
+        .form-check-input:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Smooth Transitions */
+        .d-none {
+            display: none !important;
+        }
+
+        #panel-fresher,
+        #panel-exp,
+        #panel-exp-sales {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Mobile Responsive */
+        @@media (max-width: 768px) {
+            .scroll-body {
+                max-height: calc(100vh - 320px);
+            }
+
+            fieldset.fieldset {
+                padding: 1rem;
+            }
+
+            .icon-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            .section-title {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+}
+
+<div class="card p-3">
+    <div class="fw-bold text-primary mb-2">Work Experience :</div>
+
+    <form asp-action="Index" asp-controller="WorkExperience" method="post" enctype="multipart/form-data" id="workExperienceForm" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Experience Type -->
+                        <div class="mb-3">
+                            <label class="form-label d-block req">Professional Experience</label>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="ExperienceType" class="form-check-input" type="radio" id="expFresher" value="Fresher" checked />
+                                <label class="form-check-label" for="expFresher">Fresher</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="ExperienceType" class="form-check-input" type="radio" id="expExperienced" value="Experienced" />
+                                <label class="form-check-label" for="expExperienced">Experienced</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="ExperienceType" class="form-check-input" type="radio" id="expSales" value="Experienced (Sales)" />
+                                <label class="form-check-label" for="expSales">Experienced (Sales)</label>
+                            </div>
+                        </div>
+
+                        <div class="scroll-body">
+                            <!-- Fresher Panel -->
+                            <div id="panel-fresher">
+                                <div class="card p-3">
+                                    <div class="row mb-3 mt-1">
+                                        <div class="col-md-12">
+                                            <label class="form-label req">Have you done any internships?</label>
+                                            <div class="d-flex align-items-center gap-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="internship" id="internYes" value="Yes" />
+                                                    <label class="form-check-label" for="internYes">Yes</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="internship" id="internNo" value="No" checked />
+                                                    <label class="form-check-label" for="internNo">No</label>
+                                                </div>
+                                            </div>
+
+                                            <!-- Internship Form -->
+                                            <div id="internDetails" class="internship-form d-none mt-0">
+                                                <div class="row d-flex align-items-end g-2 mb-2">
+                                                    <div class="col-md-3">
+                                                        <input id="intCompany" type="text" class="form-control form-control-sm" placeholder="Company Name" />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <input id="intPosition" type="text" class="form-control form-control-sm" placeholder="Position / Job Title" />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small">Start Date</label>
+                                                        <div class="position-relative">
+                                                            <input type="text" id="startDate_1" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                            <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small">End Date</label>
+                                                        <div class="position-relative">
+                                                            <input type="text" id="endDate_1" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                            <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mt-3 d-flex align-items-center g-0 gap-2">
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Monthly Compensation</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <span class="input-group-text">₹</span>
+                                                            <input id="inpCtc" type="number" min="0" step="0.01" class="form-control form-control-sm text-end" placeholder="0.00" />
+                                                        </div>
+                                                        <div class="form-text">Enter monthly stipend (if any)</div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Certificate</label>
+                                                        <input id="intCert" type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" />
+                                                        <div id="certFileList" class="form-text">Only filename is shown in list</div>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label class="form-label">Responsibilities & Achievements</label>
+                                                        <textarea id="intDesc" class="form-control form-control-sm" rows="2" placeholder="Briefly describe your key responsibilities and accomplishments..."></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-3 d-flex gap-2">
+                                                    <button type="button" class="btn btn-primary btn-sm" id="btnAddInternship">+ Add Internship to List</button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearInternship">Clear</button>
+                                                </div>
+
+                                                <!-- Saved Internships -->
+                                                <div class="saved-internships mt-4">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <h6 class="mb-2">Saved Internships</h6>
+                                                        <small class="text-muted" id="internCount">0 item(s)</small>
+                                                    </div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm align-middle" id="internTable">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Company</th>
+                                                                    <th>Position</th>
+                                                                    <th>Duration</th>
+                                                                    <th>Compensation</th>
+                                                                    <th>Certificate</th>
+                                                                    <th>Description</th>
+                                                                    <th style="width: 70px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                    <input type="hidden" asp-for="InternshipsJSON" id="InternshipsJSON" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Experienced Panel -->
+                            <div id="panel-exp" class="d-none">
+                                <div class="card p-3 h-100">
+                                    <fieldset class="fieldset p-3 mb-3">
+                                        <div class="mb-2 section-title">Enter Employment Details</div>
+                                        <div class="row g-2 align-items-end mb-2">
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <input type="text" id="expEmployer" class="form-control form-control-sm" placeholder="Employer Name *" />
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <input type="text" id="expDesignation" class="form-control form-control-sm" placeholder="Designation *" />
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <label class="form-label small mb-1">Start Date</label>
+                                                <div class="position-relative">
+                                                    <input type="text" id="expStartDate" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                    <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <label class="form-label small mb-1">End Date</label>
+                                                <div class="position-relative">
+                                                    <input type="text" id="expEndDate" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                    <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-lg-8 col-md-9 col-sm-12 d-flex flex-wrap align-items-center gap-2">
+                                                <input class="form-check-input mt-0" type="checkbox" id="currentWorking_1" />
+                                                <label class="form-check-label small mb-0 me-2" for="currentWorking_1">I'm currently working here</label>
+                                                <label class="form-label small mb-0 me-1 req">Yearly CTC (LPA)</label>
+                                                <input id="expCtc" type="number" min="0" step="0.01" class="form-control form-control-sm w-auto" placeholder="e.g. 6.5" />
+                                            </div>
+                                            <div class="col-12 col-lg-4 col-md-3 col-sm-12 mt-3">
+                                                <label class="form-label small req">Appointment / Experience Letter</label>
+                                                <input type="file" class="form-control form-control-sm upload-letter" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                                                <div class="mt-2 small text-muted file-preview"></div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-row justify-content-end mt-3">
+                                            <button class="btn btn-secondary btn-sm me-2" type="button">Clear</button>
+                                            <button class="btn btn-primary btn-sm" type="button">Add</button>
+                                        </div>
+                                    </fieldset>
+
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-bordered table-sm mb-0">
+                                            <thead class="table-primary text-center">
+                                                <tr>
+                                                    <th>Company Name</th>
+                                                    <th>Designation</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>CTC</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                                <tr>
+                                                    <td>Company</td>
+                                                    <td>BDM</td>
+                                                    <td>Jan 2025</td>
+                                                    <td>Jun 2025</td>
+                                                    <td>--</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></button>
+                                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Experienced (Sales) Panel -->
+                            <div id="panel-exp-sales" class="d-none">
+                                <div class="card p-3">
+                                    <fieldset class="fieldset p-3 mb-3">
+                                        <div class="mb-2 section-title">Enter Employment Details</div>
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <input id="inpEmployer" type="text" class="form-control form-control-sm" placeholder="Employer Name *" />
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <input id="inpDesignation" type="text" class="form-control form-control-sm" placeholder="Designation *" />
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <label class="form-label small mb-1">Start Date</label>
+                                                <div class="position-relative">
+                                                    <input type="text" id="salesStartDate" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                    <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-3">
+                                                <label class="form-label small mb-1">End Date</label>
+                                                <div class="position-relative">
+                                                    <input type="text" id="salesEndDate" class="form-control form-control-sm bg-white" placeholder="Select Date" />
+                                                    <i class="bi bi-calendar-event position-absolute top-50 end-0 translate-middle-y me-2 text-muted"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 mt-2">
+                                            <div class="col-12 col-lg-8">
+                                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                                    <input class="form-check-input mt-0" type="checkbox" id="currentWorking_2" />
+                                                    <label class="form-check-label small mb-0 me-2" for="currentWorking_2">I am currently working here</label>
+                                                    <label for="salesCtc" class="form-label small mb-0 me-1 req">Yearly CTC (LPA)</label>
+                                                    <input id="salesCtc" type="number" min="0" step="0.01" class="form-control form-control-sm" style="max-width:160px" placeholder="e.g. 6.5" />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4 col-lg-4">
+                                                <label class="form-label small req mb-1">Appointment / Experience Letter</label>
+                                                <input type="file" class="form-control form-control-sm upload-letter" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                                                <div class="mt-2 small text-muted file-preview"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 mt-2">
+                                            <div class="col-12 col-md-4">
+                                                <label for="inpArea" class="form-label small mb-1">Area Covered / HQ / Branch</label>
+                                                <input id="inpArea" type="text" class="form-control form-control-sm" placeholder="Location / HQ" />
+                                            </div>
+                                            <div class="col-12 col-md-8">
+                                                <label for="inpReason" class="form-label small mb-1">Reason For Leaving</label>
+                                                <input id="inpReason" type="text" class="form-control form-control-sm" placeholder="Optional" />
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12 d-flex justify-content-end gap-2">
+                                                <button id="btnAddSales" type="button" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-plus-lg me-1"></i>Add Sales Details
+                                                </button>
+                                                <button id="btnClear" class="btn btn-secondary btn-sm" type="button">Clear</button>
+                                                <button id="btnAdd" class="btn btn-primary btn-sm" type="button">Add</button>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-sm mb-0 align-middle text-center" id="expTable">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <th>Employer Name</th>
+                                                    <th>Designation</th>
+                                                    <th>Tenure</th>
+                                                    <th>Area Covered</th>
+                                                    <th>Yearly CTC (LPA)</th>
+                                                    <th style="width:50px">Stocksist</th>
+                                                    <th style="width:50px">Reference</th>
+                                                    <th style="width:100px">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Company One</td>
+                                                    <td>Manager</td>
+                                                    <td>Jan 2022 – Dec 2023</td>
+                                                    <td>Kolkata</td>
+                                                    <td>12</td>
+                                                    <td><button class="btn btn-outline-secondary btn-sm icon-btn" title="Stocksist"><i class="bi bi-info-circle"></i></button></td>
+                                                    <td><button class="btn btn-outline-secondary btn-sm icon-btn" title="Reference"><i class="bi bi-people"></i></button></td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center gap-1">
+                                                            <button class="btn btn-outline-primary btn-sm icon-btn" title="Edit"><i class="bi bi-pencil"></i></button>
+                                                            <button class="btn btn-outline-danger btn-sm icon-btn" title="Delete"><i class="bi bi-trash"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="mt-3 mb-2">
+                                        <div class="fw-semibold mb-2">Other Information :</div>
+                                        <div class="note-box small">
+                                            Draw in brief the organization structure of the company where you are presently employed indicating Two levels above and One level below your position:
+                                        </div>
+                                        <textarea class="form-control mt-2" rows="3" placeholder="Type here..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+@section PageScripts {
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        (() => {
+            'use strict';
+
+            let internships = [];
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const hasFlatpickr = typeof window.flatpickr === "function";
+
+            // Connect footer buttons to form FIRST
+            setTimeout(() => {
+                const btnNext = document.getElementById('btnNext');
+                const btnSave = document.getElementById('btnSave');
+                const form = document.getElementById('workExperienceForm');
+
+                if (btnNext && form) {
+                    btnNext.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        form.submit();
+                    });
+                }
+
+                if (btnSave && form) {
+                    btnSave.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert('Work experience saved successfully!');
+                        }).catch(err => {
+                            console.error('Save failed:', err);
+                        });
+                    });
+                }
+            }, 100);
+
+            /* ---------- Panel Switching ---------- */
+            $$('input[name="ExperienceType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    const panelFresher = $('#panel-fresher');
+                    const panelExp = $('#panel-exp');
+                    const panelExpSales = $('#panel-exp-sales');
+
+                    if (panelFresher) panelFresher.classList.toggle('d-none', val !== 'Fresher');
+                    if (panelExp) panelExp.classList.toggle('d-none', val !== 'Experienced');
+                    if (panelExpSales) panelExpSales.classList.toggle('d-none', val !== 'Experienced (Sales)');
+                });
+            });
+
+            // Initialize panel visibility on page load
+            const selectedExp = $('input[name="ExperienceType"]:checked');
+            if (selectedExp) {
+                const val = selectedExp.value;
+                const panelFresher = $('#panel-fresher');
+                const panelExp = $('#panel-exp');
+                const panelExpSales = $('#panel-exp-sales');
+
+                if (panelFresher) panelFresher.classList.toggle('d-none', val !== 'Fresher');
+                if (panelExp) panelExp.classList.toggle('d-none', val !== 'Experienced');
+                if (panelExpSales) panelExpSales.classList.toggle('d-none', val !== 'Experienced (Sales)');
+            }
+
+            /* ---------- Internship Visibility ---------- */
+            $$('input[name="internship"]').forEach(r => r.addEventListener("change", function() {
+                const show = $('#internYes')?.checked;
+                $('#internDetails')?.classList.toggle("d-none", !show);
+            }));
+
+            /* ---------- Date Pair Helper ---------- */
+            function initDatePair(startSel, endSel) {
+                if (!hasFlatpickr) return { start: null, end: null };
+                const cfg = { altInput: true, altFormat: "d M Y", dateFormat: "Y-m-d", allowInput: true };
+
+                const start = flatpickr(startSel, {
+                    ...cfg,
+                    onChange: (dates) => {
+                        const d = dates?.[0] || null;
+                        end?.set("minDate", d);
+                    }
+                });
+
+                const end = flatpickr(endSel, {
+                    ...cfg,
+                    onChange: (dates) => {
+                        const d = dates?.[0] || null;
+                        start?.set("maxDate", d);
+                    }
+                });
+
+                return { start, end };
+            }
+
+            /* ---------- Initialize date pairs for each section ---------- */
+            const { start: fpIntStart, end: fpIntEnd } = initDatePair("#startDate_1", "#endDate_1");
+            const { start: fpExpStart, end: fpExpEnd } = initDatePair("#expStartDate", "#expEndDate");
+            const { start: fpSalesStart, end: fpSalesEnd } = initDatePair("#salesStartDate", "#salesEndDate");
+
+            /* ---------- "Currently working" checkbox logic ---------- */
+            function bindCurrentWorking(checkboxId, endInputSel, fpEndInstance) {
+                const cb = document.getElementById(checkboxId);
+                const endInput = document.querySelector(endInputSel);
+                if (!cb || !endInput) return;
+
+                cb.addEventListener("change", () => {
+                    const on = cb.checked;
+                    endInput.value = on ? "Present" : "";
+                    endInput.disabled = on;
+                    if (on) fpEndInstance?.clear?.();
+                });
+            }
+
+            bindCurrentWorking("currentWorking_1", "#expEndDate", fpExpEnd);
+            bindCurrentWorking("currentWorking_2", "#salesEndDate", fpSalesEnd);
+
+            /* ---------- Add Internship ---------- */
+            const btnAddInternship = $('#btnAddInternship');
+            if (btnAddInternship) {
+                btnAddInternship.addEventListener('click', function() {
+                    const company = $('#intCompany')?.value.trim();
+                    const position = $('#intPosition')?.value.trim();
+                    const startDate = $('#startDate_1')?.value;
+                    const endDate = $('#endDate_1')?.value;
+                    const compensation = $('#inpCtc')?.value;
+                    const certificate = $('#intCert')?.files?.[0]?.name || '';
+                    const description = $('#intDesc')?.value.trim();
+
+                    if (!company || !position) {
+                        alert('Please fill in Company and Position');
+                        return;
+                    }
+
+                    internships.push({ company, position, startDate, endDate, compensation, certificate, description });
+                    updateInternshipTable();
+                    clearInternshipForm();
+                });
+            }
+
+            /* ---------- Clear Internship ---------- */
+            const btnClearInternship = $('#btnClearInternship');
+            if (btnClearInternship) {
+                btnClearInternship.addEventListener('click', clearInternshipForm);
+            }
+
+            function clearInternshipForm() {
+                ['#intCompany', '#intPosition', '#startDate_1', '#endDate_1', '#inpCtc', '#intDesc'].forEach(sel => {
+                    const el = $(sel);
+                    if (el) el.value = '';
+                });
+                const cert = $('#intCert');
+                if (cert) cert.value = '';
+                const certList = $('#certFileList');
+                if (certList) certList.textContent = 'Only filename is shown in list';
+            }
+
+            function updateInternshipTable() {
+                const tbody = document.querySelector('#internTable tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                internships.forEach((item, index) => {
+                    const duration = item.startDate && item.endDate ? `${item.startDate} to ${item.endDate}` : 'N/A';
+                    const comp = item.compensation ? `₹${item.compensation}` : 'N/A';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.company}</td>
+                        <td>${item.position}</td>
+                        <td>${duration}</td>
+                        <td>${comp}</td>
+                        <td>${item.certificate || 'N/A'}</td>
+                        <td>${item.description || 'N/A'}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeInternship(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                const count = $('#internCount');
+                if (count) count.textContent = `${internships.length} item(s)`;
+
+                const jsonField = $('#InternshipsJSON');
+                if (jsonField) jsonField.value = JSON.stringify(internships);
+            }
+
+            window.removeInternship = function(index) {
+                if (confirm('Remove this internship?')) {
+                    internships.splice(index, 1);
+                    updateInternshipTable();
+                }
+            };
+
+            /* ---------- File Preview Modal ---------- */
+            const modal = document.getElementById('fileModal');
+            const mBody = document.getElementById('modalContent');
+
+            function openPreview(file) {
+                if (!modal || !mBody) return;
+                const url = URL.createObjectURL(file);
+                const lower = (file.name || '').toLowerCase();
+
+                mBody.innerHTML = '';
+                if (file.type.startsWith('image/')) {
+                    mBody.innerHTML = `<img src="${url}" class="img-fluid rounded d-block mx-auto" alt="Preview">`;
+                } else if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
+                    mBody.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="80vh">`;
+                } else if (lower.endsWith('.doc') || lower.endsWith('.docx')) {
+                    mBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <p class="mb-2 text-muted">Preview not available for Word documents.</p>
+                            <a href="${url}" download class="btn btn-sm btn-primary">⬇ Download ${file.name}</a>
+                        </div>`;
+                } else {
+                    mBody.innerHTML = `<p class="text-danger text-center my-3">Unsupported file format.</p>`;
+                }
+
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+                bsModal.show();
+                modal.addEventListener('hidden.bs.modal', () => URL.revokeObjectURL(url), { once: true });
+            }
+
+            // Upload letter file handling (for Experienced sections)
+            document.addEventListener('change', function (e) {
+                if (!e.target.classList.contains('upload-letter')) return;
+
+                const file = e.target.files?.[0];
+                const container = e.target.closest('.col-12, .col-md-3, .col-lg-4, .col-md-6') || e.target.parentElement;
+                const preview = container?.querySelector('.file-preview');
+                if (!preview) return;
+
+                preview.textContent = '';
+                if (!file) {
+                    preview.textContent = 'No file selected';
+                    return;
+                }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'me-2';
+                nameSpan.textContent = file.name;
+
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'text-primary';
+                link.textContent = '📄 View Uploaded Document';
+                link.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    openPreview(file);
+                });
+
+                preview.appendChild(nameSpan);
+                preview.appendChild(link);
+            });
+
+            // Internship Certificate file handling
+            (function () {
+                const input = document.getElementById('intCert');
+                const list = document.getElementById('certFileList');
+                if (!input || !list) return;
+
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files?.[0];
+                    list.innerHTML = '';
+                    if (!file) {
+                        list.textContent = 'Only filename is shown in list';
+                        return;
+                    }
+
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = file.name;
+                    link.className = 'text-primary';
+                    link.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        openPreview(file);
+                    });
+
+                    list.appendChild(link);
+                });
+            })();
+        })();
+    </script>
+}
+
+<!-- File Preview Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0">Document Preview</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-2" id="modalContent"></div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        (() => {
+            'use strict';
+
+            let internships = [];
+
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const hasFlatpickr = typeof window.flatpickr === "function";
+
+            // Panel switching
+            $$('input[name="ExperienceType"]').forEach(r => {
+                r.addEventListener('change', e => {
+                    const val = e.target.value;
+                    $('#panel-fresher')?.classList.toggle('d-none', val !== 'Fresher');
+                    $('#panel-exp')?.classList.toggle('d-none', val !== 'Experienced');
+                    $('#panel-exp-sales')?.classList.toggle('d-none', val !== 'Experienced (Sales)');
+                    $$(".scroll-body").forEach(el => { el.scrollLeft = 0; });
+                });
+            });
+
+            // Internship visibility
+            $$('input[name="internship"]').forEach(r => r.addEventListener("change", function() {
+                const show = $('#internYes')?.checked;
+                $('#internDetails')?.classList.toggle("d-none", !show);
+            }));
+
+            // Add internship
+            const btnAddInternship = $('#btnAddInternship');
+            if (btnAddInternship) {
+                btnAddInternship.addEventListener('click', function() {
+                    const company = $('#intCompany')?.value;
+                    const position = $('#intPosition')?.value;
+                    const startDate = $('#startDate_1')?.value;
+                    const endDate = $('#endDate_1')?.value;
+                    const compensation = $('#inpCtc')?.value;
+                    const certificate = $('#intCert')?.files?.[0]?.name || '';
+                    const description = $('#intDesc')?.value;
+
+                    if (!company || !position) {
+                        alert('Please fill in Company and Position');
+                        return;
+                    }
+
+                    const internship = { company, position, startDate, endDate, compensation, certificate, description };
+                    internships.push(internship);
+                    updateInternshipTable();
+                    clearInternshipForm();
+                });
+            }
+
+            // Clear internship
+            const btnClearInternship = $('#btnClearInternship');
+            if (btnClearInternship) {
+                btnClearInternship.addEventListener('click', clearInternshipForm);
+            }
+
+            function clearInternshipForm() {
+                ['#intCompany', '#intPosition', '#startDate_1', '#endDate_1', '#inpCtc', '#intDesc'].forEach(sel => {
+                    const el = $(sel);
+                    if (el) el.value = '';
+                });
+                const cert = $('#intCert');
+                if (cert) cert.value = '';
+            }
+
+            function updateInternshipTable() {
+                const tbody = document.querySelector('#internTable tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                internships.forEach((item, index) => {
+                    const duration = item.startDate && item.endDate ? `${item.startDate} to ${item.endDate}` : 'N/A';
+                    const comp = item.compensation ? `₹${item.compensation}` : 'N/A';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.company}</td>
+                        <td>${item.position}</td>
+                        <td>${duration}</td>
+                        <td>${comp}</td>
+                        <td>${item.certificate}</td>
+                        <td>${item.description}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeInternship(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                const count = $('#internCount');
+                if (count) count.textContent = `${internships.length} item(s)`;
+
+                const jsonField = $('#InternshipsJSON');
+                if (jsonField) jsonField.value = JSON.stringify(internships);
+            }
+
+            window.removeInternship = function(index) {
+                internships.splice(index, 1);
+                updateInternshipTable();
+            };
+            $('input[name="ExperienceType"]').on('change', function() {
+                const val = $(this).val();
+                $('#panel-fresher, #panel-exp, #panel-exp-sales').addClass('d-none');
+                
+                if (val === 'Fresher') {
+                    $('#panel-fresher').removeClass('d-none');
+                } else if (val === 'Experienced') {
+                    $('#panel-exp').removeClass('d-none');
+                } else if (val === 'Experienced (Sales)') {
+                    $('#panel-exp-sales').removeClass('d-none');
+                }
+            });
+
+            // Internship toggle
+            $('input[name="internship"]').on('change', function() {
+                if ($(this).val() === 'Yes') {
+                    $('#internDetails').removeClass('d-none');
+                } else {
+                    $('#internDetails').addClass('d-none');
+                }
+            });
+
+            // Add internship
+            $('#btnAddInternship').on('click', function() {
+                const company = $('#intCompany').val();
+                const position = $('#intPosition').val();
+                const startDate = $('#startDate_1').val();
+                const endDate = $('#endDate_1').val();
+                const compensation = $('#inpCtc').val();
+                const certificate = $('#intCert')[0].files[0]?.name || '';
+                const description = $('#intDesc').val();
+
+                if (!company || !position) {
+                    alert('Please fill in Company and Position');
+                    return;
+                }
+
+                const internship = {
+                    company, position, startDate, endDate, 
+                    compensation, certificate, description
+                };
+                internships.push(internship);
+
+                updateInternshipTable();
+                clearInternshipForm();
+            });
+
+            // Clear internship form
+            $('#btnClearInternship').on('click', clearInternshipForm);
+
+            function clearInternshipForm() {
+                $('#intCompany, #intPosition, #startDate_1, #endDate_1, #inpCtc, #intDesc').val('');
+                $('#intCert').val('');
+            }
+
+            function updateInternshipTable() {
+                const tbody = $('#internTable tbody');
+                tbody.empty();
+                
+                internships.forEach((item, index) => {
+                    const duration = item.startDate && item.endDate 
+                        ? `${item.startDate} to ${item.endDate}` 
+                        : 'N/A';
+                    const comp = item.compensation ? `₹${item.compensation}` : 'N/A';
+                    
+                    tbody.append(`
+                        <tr>
+                            <td>${item.company}</td>
+                            <td>${item.position}</td>
+                            <td>${duration}</td>
+                            <td>${comp}</td>
+                            <td>${item.certificate}</td>
+                            <td>${item.description}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removeInternship(${index})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                $('#internCount').text(`${internships.length} item(s)`);
+                $('#InternshipsJSON').val(JSON.stringify(internships));
+            }
+
+            window.removeInternship = function(index) {
+                internships.splice(index, 1);
+                updateInternshipTable();
+            };
+
+            // Chatbot functionality
+            const fabBtn = $('#mendine-chatbot');
+            const panel = $('#mc-panel');
+            const closeBtn = $('#mc-close');
+            const sendBtn = $('#mc-send');
+            const input = $('#mc-input');
+            const body = $('#mc-body');
+            const tip = $('#mc-tip');
+
+            fabBtn.on('click', function() {
+                panel.attr('aria-hidden', 'false').fadeIn(200);
+                tip.attr('aria-hidden', 'true').fadeOut(200);
+            });
+
+            closeBtn.on('click', function() {
+                panel.attr('aria-hidden', 'true').fadeOut(200);
+            });
+
+            sendBtn.on('click', function() {
+                const msg = input.val().trim();
+                if (msg) {
+                    body.append(`<div class="mc-msg mc-msg-user">${msg}</div>`);
+                    input.val('');
+                    setTimeout(() => {
+                        body.append(`<div class="mc-msg mc-msg-bot">Thank you for your message. Our team will assist you shortly.</div>`);
+                        body.scrollTop(body[0].scrollHeight);
+                    }, 500);
+                }
+            });
+
+            input.on('keypress', function(e) {
+                if (e.which === 13) {
+                    sendBtn.click();
+                }
+            });
+
+            // Show tip after delay
+            setTimeout(() => {
+                tip.attr('aria-hidden', 'false').fadeIn(300);
+            }, 3000);
+            }
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        (() => {
+            'use strict';
+
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const hasFlatpickr = typeof window.flatpickr === "function";
+
+            /* ---------- Date Pair Helper ---------- */
+            function initDatePair(startSel, endSel) {
+                if (!hasFlatpickr) return { start: null, end: null };
+                const cfg = { altInput: true, altFormat: "d M Y", dateFormat: "Y-m-d", allowInput: true };
+
+                const start = flatpickr(startSel, {
+                    ...cfg,
+                    onChange: (dates) => {
+                        const d = dates?.[0] || null;
+                        end?.set("minDate", d);
+                    }
+                });
+
+                const end = flatpickr(endSel, {
+                    ...cfg,
+                    onChange: (dates) => {
+                        const d = dates?.[0] || null;
+                        start?.set("maxDate", d);
+                    }
+                });
+
+                return { start, end };
+            }
+
+            /* ---------- Initialize date pairs for each section ---------- */
+            const { start: fpIntStart, end: fpIntEnd } = initDatePair("#startDate_1", "#endDate_1");
+            const { start: fpExpStart, end: fpExpEnd } = initDatePair("#expStartDate", "#expEndDate");
+            const { start: fpSalesStart, end: fpSalesEnd } = initDatePair("#salesStartDate", "#salesEndDate");
+
+            /* ---------- "Currently working" checkbox logic ---------- */
+            function bindCurrentWorking(checkboxId, endInputSel, fpEndInstance) {
+                const cb = document.getElementById(checkboxId);
+                const endInput = document.querySelector(endInputSel);
+                if (!cb || !endInput) return;
+
+                cb.addEventListener("change", () => {
+                    const on = cb.checked;
+                    endInput.value = on ? "Present" : "";
+                    endInput.disabled = on;
+                    if (on) fpEndInstance?.clear?.();
+                });
+            }
+
+            bindCurrentWorking("currentWorking_1", "#expEndDate", fpExpEnd);
+            bindCurrentWorking("currentWorking_2", "#salesEndDate", fpSalesEnd);
+
+            /* ---------- File Preview Modal ---------- */
+            const modal = document.getElementById('fileModal');
+            const mBody = document.getElementById('modalContent');
+
+            function openPreview(file) {
+                if (!modal || !mBody) return;
+                const url = URL.createObjectURL(file);
+                const lower = (file.name || '').toLowerCase();
+
+                mBody.innerHTML = '';
+                if (file.type.startsWith('image/')) {
+                    mBody.innerHTML = `<img src="${url}" class="img-fluid rounded d-block mx-auto" alt="Preview">`;
+                } else if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
+                    mBody.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="80vh">`;
+                } else if (lower.endsWith('.doc') || lower.endsWith('.docx')) {
+                    mBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <p class="mb-2 text-muted">Preview not available for Word documents.</p>
+                            <a href="${url}" download class="btn btn-sm btn-primary">⬇ Download ${file.name}</a>
+                        </div>`;
+                } else {
+                    mBody.innerHTML = `<p class="text-danger text-center my-3">Unsupported file format.</p>`;
+                }
+
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+                bsModal.show();
+                modal.addEventListener('hidden.bs.modal', () => URL.revokeObjectURL(url), { once: true });
+            }
+
+            // Upload letter file handling (for Experienced sections)
+            document.addEventListener('change', function (e) {
+                if (!e.target.classList.contains('upload-letter')) return;
+
+                const file = e.target.files?.[0];
+                const container = e.target.closest('.col-12, .col-md-3, .col-lg-4, .col-md-6') || e.target.parentElement;
+                const preview = container?.querySelector('.file-preview');
+                if (!preview) return;
+
+                preview.textContent = '';
+                if (!file) {
+                    preview.textContent = 'No file selected';
+                    return;
+                }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'me-2';
+                nameSpan.textContent = file.name;
+
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'text-primary';
+                link.textContent = '📄 View Uploaded Document';
+                link.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    openPreview(file);
+                });
+
+                preview.appendChild(nameSpan);
+                preview.appendChild(link);
+            });
+
+            // Internship Certificate file handling
+            (function () {
+                const input = document.getElementById('intCert');
+                const list = document.getElementById('certFileList');
+                if (!input || !list) return;
+
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files?.[0];
+                    list.innerHTML = '';
+                    if (!file) {
+                        list.textContent = 'No file selected';
+                        return;
+                    }
+
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = file.name;
+                    link.className = 'text-primary';
+                    link.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        openPreview(file);
+                    });
+
+                    list.appendChild(link);
+                });
+            })();
+        })();
+    </script>
+
+
+<!-- File Preview Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0">Document Preview</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-2" id="modalContent"></div>
+        </div>
+    </div>
+</div>
+
+
+

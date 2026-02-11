@@ -1,0 +1,164 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var steps = new[]
+    {
+        new { Name = "Recruitment Form", Controller = "RecruitmentForm", Order = 0, Icon = "bi-file-text" },
+        new { Name = "Professional Summary", Controller = "ProfessionalSummary", Order = 1, Icon = "bi-briefcase" },
+        new { Name = "Personal Details", Controller = "PersonalDetails", Order = 2, Icon = "bi-person" },
+        new { Name = "Family Details", Controller = "FamilyDetails", Order = 3, Icon = "bi-people" },
+        new { Name = "Educational Details", Controller = "EducationalDetails", Order = 4, Icon = "bi-book" },
+        new { Name = "Work Experience", Controller = "WorkExperience", Order = 5, Icon = "bi-briefcase-fill" },
+        new { Name = "Other Details", Controller = "OtherDetails", Order = 6, Icon = "bi-card-checklist" }
+    };
+    var currentStep = steps.FirstOrDefault(s => s.Controller == currentController);
+    var currentOrder = currentStep?.Order ?? 0;
+}
+
+<div class="stepper-scroll-wrapper">
+<div class="status-stepper status-stepper--xs mb-0" data-status="progress">
+    @foreach (var step in steps)
+    {
+        var isCompleted = step.Order < currentOrder;
+        var isCurrent = step.Order == currentOrder;
+        var statusClass = isCompleted ? "status-completed" : 
+                         isCurrent ? "status-progress active" : 
+                         "status-pending";
+        
+        <div class="status-step @statusClass" data-order="@step.Order" data-current="@currentOrder">
+            <div class="status-circle">
+                @if (isCompleted)
+                {
+                    <i class="bi bi-check-circle"></i>
+                }
+                else
+                {
+                    <i class="@step.Icon"></i>
+                }
+            </div>
+            <div class="status-label">@step.Name</div>
+        </div>
+    }
+</div>
+</div>
+
+<style>
+    /* Stepper Wrapper — fade edges on scroll */
+    .stepper-scroll-wrapper {
+        position: relative; margin-top: var(--header-h, 56px);
+    }
+    .stepper-scroll-wrapper::before,
+    .stepper-scroll-wrapper::after {
+        content: ''; position: absolute; top: 0; bottom: 0; width: 24px;
+        z-index: 2; pointer-events: none; opacity: 0; transition: opacity .25s;
+    }
+    .stepper-scroll-wrapper::before {
+        left: 0; background: linear-gradient(to right, #f8f9fa 30%, transparent);
+    }
+    .stepper-scroll-wrapper::after {
+        right: 0; background: linear-gradient(to left, #f8f9fa 30%, transparent);
+    }
+    .stepper-scroll-wrapper.fade-left::before  { opacity: 1; }
+    .stepper-scroll-wrapper.fade-right::after   { opacity: 1; }
+
+    /* Stepper Base */
+    .status-stepper {
+        flex: 0 0 auto; display: flex; align-items: stretch; gap: 0;
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        background: #f8f9fa; border-bottom: 1px solid #e9ecef; padding: 5px 0;
+        scrollbar-width: none;  /* Firefox */
+        scroll-behavior: smooth;
+    }
+    .status-stepper::-webkit-scrollbar { display: none; }  /* Chrome/Safari */
+
+    .status-step {
+        flex: 1 1 0; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 2px; padding: 4px 2px; font-size: .82rem;
+        color: #6c757d; min-width: 90px; opacity: .85; border-right: 1px solid #eef0f2;
+        text-align: center;
+    }
+    .status-step:last-child { border-right: 0; }
+    .status-step.active { color: #0d6efd; opacity: 1; }
+    .status-circle {
+        width: 26px; height: 26px; border-radius: 50%; border: 1px solid currentColor;
+        display: flex; align-items: center; justify-content: center; font-size: .88rem;
+        flex-shrink: 0;
+    }
+    .status-label { white-space: nowrap; }
+
+    /* Compact (XS) Stepper */
+    .status-stepper--xs { padding: 2px 0; }
+    .status-stepper--xs .status-step { min-width: 70px; padding: 2px 0; gap: 1px; font-size: .72rem; opacity: .9; }
+    .status-stepper--xs .status-circle { width: 18px; height: 18px; font-size: .65rem; }
+    .status-stepper--xs .status-circle i { font-size: .9em; line-height: 1; }
+    .status-stepper--xs .status-label { font-size: .68rem; line-height: 1.1; }
+
+    /* Completed Steps - Green */
+    .status-stepper--xs .status-step.status-completed .status-circle {
+        background: #d1e7dd !important; border-color: #198754 !important; color: #198754 !important;
+    }
+    .status-stepper--xs .status-step.status-completed .status-label {
+        color: #198754 !important; font-weight: 600 !important;
+    }
+    .status-stepper--xs .status-step.status-completed { opacity: 1 !important; }
+
+    /* Current Step - Blue */
+    .status-stepper--xs .status-step.status-progress.active .status-circle {
+        background: #cfe2ff !important; border-color: #0d6efd !important; color: #0d6efd !important;
+    }
+    .status-stepper--xs .status-step.status-progress.active .status-label {
+        color: #0d6efd !important; font-weight: 600 !important;
+    }
+    .status-stepper--xs .status-step.status-progress { opacity: 1 !important; }
+
+    /* ── Responsive Stepper ── */
+
+    /* Tablets */
+    @@media (max-width: 992px) {
+        .status-stepper--xs .status-step { min-width: 80px; }
+    }
+
+    /* Phones */
+    @@media (max-width: 576px) {
+        .status-stepper--xs .status-step {
+            min-width: 72px; padding: 4px 6px; flex: 0 0 auto;
+        }
+        .status-stepper--xs .status-circle { width: 22px; height: 22px; font-size: .72rem; }
+        .status-stepper--xs .status-label { font-size: .62rem; white-space: nowrap; }
+    }
+
+    /* Small phones */
+    @@media (max-width: 375px) {
+        .status-stepper--xs .status-step { min-width: 64px; padding: 3px 4px; }
+        .status-stepper--xs .status-circle { width: 20px; height: 20px; font-size: .65rem; }
+        .status-stepper--xs .status-label { font-size: .58rem; }
+    }
+</style>
+
+<script>
+    // Auto-scroll active step into view + fade edge indicators
+    (function () {
+        const wrapper = document.querySelector('.stepper-scroll-wrapper');
+        const stepper = document.querySelector('.status-stepper');
+        if (!wrapper || !stepper) return;
+
+        function updateFades() {
+            const sl = stepper.scrollLeft;
+            const maxScroll = stepper.scrollWidth - stepper.clientWidth;
+            wrapper.classList.toggle('fade-left', sl > 4);
+            wrapper.classList.toggle('fade-right', sl < maxScroll - 4);
+        }
+
+        stepper.addEventListener('scroll', updateFades, { passive: true });
+        window.addEventListener('resize', updateFades);
+
+        // Scroll active step to center on load
+        requestAnimationFrame(function () {
+            const active = stepper.querySelector('.status-step.active');
+            if (active) {
+                const offset = active.offsetLeft - (stepper.clientWidth / 2) + (active.offsetWidth / 2);
+                stepper.scrollLeft = Math.max(0, offset);
+            }
+            updateFades();
+        });
+    })();
+</script>

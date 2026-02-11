@@ -1,0 +1,372 @@
+@model ieRecruitment.Models.PersonalDetailsViewModel
+
+@{
+    ViewData["Title"] = "Personal Details";
+    Layout = "~/Views/Shared/_RecruitmentFormLayout.cshtml";
+}
+
+<div class="card p-3 h-100">
+    <!-- Tab Toggle -->
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <div class="btn-group" role="group" aria-label="Section toggle">
+            <input type="radio" class="btn-check" name="sectionToggle" id="btnAddress" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary tab-toggle-btn me-2" for="btnAddress">Address</label>
+
+            <input type="radio" class="btn-check" name="sectionToggle" id="btnOtherDetails" autocomplete="off">
+            <label class="btn btn-outline-secondary tab-toggle-btn" for="btnOtherDetails">Other Details</label>
+        </div>
+    </div>
+
+    <form asp-action="Index" asp-controller="PersonalDetails" method="post" id="personalDetailsForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Address Section -->
+        <div id="addressSection">
+            <div class="row">
+                <!-- Current Address -->
+                <div class="col-md-6 mb-3">
+                    <div class="card p-3 h-100">
+                        <h6 class="fw-bold text-primary mb-3">Current Address</h6>
+                        
+                        <div class="mb-2">
+                            <textarea asp-for="CurrentAddressLine1" class="form-control" rows="2" placeholder="Address Line 1 *"></textarea>
+                            <span asp-validation-for="CurrentAddressLine1" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <textarea asp-for="CurrentAddressLine2" class="form-control" rows="2" placeholder="Address Line 2"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentCity" class="form-control" placeholder="City *">
+                                <span asp-validation-for="CurrentCity" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentPostOffice" class="form-control" placeholder="Post Office">
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentPinCode" class="form-control" placeholder="Pin Code *">
+                                <span asp-validation-for="CurrentPinCode" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentDistrict" class="form-control" placeholder="District *">
+                                <span asp-validation-for="CurrentDistrict" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentState" class="form-control" placeholder="State *">
+                                <span asp-validation-for="CurrentState" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="CurrentCountry" class="form-control" placeholder="Country *">
+                                <span asp-validation-for="CurrentCountry" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="col-md-6 mb-3">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold text-primary mb-0">Permanent Address</h6>
+                            <div class="form-check">
+                                <input asp-for="SameAsCurrent" class="form-check-input" type="checkbox" id="sameAsCurrent">
+                                <label class="form-check-label" for="sameAsCurrent">Same as Current</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <textarea asp-for="PermanentAddressLine1" class="form-control perm-field" rows="2" placeholder="Address Line 1 *"></textarea>
+                            <span asp-validation-for="PermanentAddressLine1" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <textarea asp-for="PermanentAddressLine2" class="form-control perm-field" rows="2" placeholder="Address Line 2"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentCity" class="form-control perm-field" placeholder="City *">
+                                <span asp-validation-for="PermanentCity" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentPostOffice" class="form-control perm-field" placeholder="Post Office">
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentPinCode" class="form-control perm-field" placeholder="Pin Code *">
+                                <span asp-validation-for="PermanentPinCode" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentDistrict" class="form-control perm-field" placeholder="District *">
+                                <span asp-validation-for="PermanentDistrict" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentState" class="form-control perm-field" placeholder="State *">
+                                <span asp-validation-for="PermanentState" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <input asp-for="PermanentCountry" class="form-control perm-field" placeholder="Country *">
+                                <span asp-validation-for="PermanentCountry" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Details Section -->
+        <div id="otherDetailsSection" style="display:none;">
+            <div class="card p-3 h-100">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Gender</label>
+                        <select asp-for="Gender" class="form-select">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Nationality</label>
+                        <select asp-for="Nationality" class="form-select">
+                            <option value="">Select</option>
+                            <option value="Indian">Indian</option>
+                            <option value="American">American</option>
+                            <option value="British">British</option>
+                            <option value="Canadian">Canadian</option>
+                            <option value="Australian">Australian</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Nationality" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Marital Status</label>
+                        <select asp-for="MaritalStatus" class="form-select">
+                            <option value="">Select</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Widowed">Widowed</option>
+                        </select>
+                        <span asp-validation-for="MaritalStatus" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="dateOfBirth" class="form-label fw-semibold">Date of Birth</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar-event"></i>
+                            </span>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" id="dateOfBirth">
+                        </div>
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Religion</label>
+                        <select asp-for="Religion" class="form-select">
+                            <option value="">Select</option>
+                            <option value="Hindu">Hindu</option>
+                            <option value="Muslim">Muslim</option>
+                            <option value="Christian">Christian</option>
+                            <option value="Sikh">Sikh</option>
+                            <option value="Buddhist">Buddhist</option>
+                            <option value="Jain">Jain</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Religion" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Willing to Relocate?</label>
+                        <select asp-for="WillingToRelocate" class="form-select">
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                        <span asp-validation-for="WillingToRelocate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">Social Media</label>
+                        <select asp-for="SocialMediaPlatform" class="form-select">
+                            <option value="">Select</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="Twitter">Twitter</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="GitHub">GitHub</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label fw-semibold">Profile Link</label>
+                        <div class="d-flex gap-2">
+                            <input asp-for="ProfileLink" type="url" class="form-control" placeholder="Enter profile link">
+                            <button type="button" class="btn btn-outline-primary btn-sm px-3">Add</button>
+                        </div>
+                        <span asp-validation-for="ProfileLink" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Submit Button (triggered by footer) -->
+        <button type="submit" id="hiddenSubmit" style="display:none;"></button>
+    </form>
+</div>
+
+@section PageScripts {
+    <script>
+        (() => {
+            'use strict';
+
+            const addressSection = document.getElementById('addressSection');
+            const otherDetailsSection = document.getElementById('otherDetailsSection');
+            const btnAddress = document.getElementById('btnAddress');
+            const btnOtherDetails = document.getElementById('btnOtherDetails');
+            const sameAsCurrentCheckbox = document.getElementById('sameAsCurrent');
+
+            // Section Toggle
+            function showSection(section) {
+                if (section === 'address') {
+                    addressSection.style.display = '';
+                    otherDetailsSection.style.display = 'none';
+                } else {
+                    addressSection.style.display = 'none';
+                    otherDetailsSection.style.display = '';
+                }
+            }
+
+            btnAddress?.addEventListener('change', (e) => {
+                if (e.target.checked) showSection('address');
+            });
+
+            btnOtherDetails?.addEventListener('change', (e) => {
+                if (e.target.checked) showSection('other');
+            });
+
+            // Copy Current to Permanent Address
+            const currentFields = {
+                'CurrentAddressLine1': 'PermanentAddressLine1',
+                'CurrentAddressLine2': 'PermanentAddressLine2',
+                'CurrentCity': 'PermanentCity',
+                'CurrentPostOffice': 'PermanentPostOffice',
+                'CurrentPinCode': 'PermanentPinCode',
+                'CurrentDistrict': 'PermanentDistrict',
+                'CurrentState': 'PermanentState',
+                'CurrentCountry': 'PermanentCountry'
+            };
+
+            function copyCurrentToPermanent() {
+                const isChecked = sameAsCurrentCheckbox?.checked;
+                const permFields = document.querySelectorAll('.perm-field');
+
+                if (isChecked) {
+                    // Copy values
+                    Object.entries(currentFields).forEach(([currId, permId]) => {
+                        const currField = document.getElementById(currId);
+                        const permField = document.getElementById(permId);
+                        if (currField && permField) {
+                            permField.value = currField.value;
+                            permField.readOnly = true; // Use readonly instead of disabled
+                            permField.style.backgroundColor = '#f3f4f6'; // Visual indication
+                        }
+                    });
+                } else {
+                    // Enable fields
+                    permFields.forEach(field => {
+                        field.readOnly = false;
+                        field.style.backgroundColor = '';
+                    });
+                }
+            }
+
+            // Live sync when "Same as Current" is checked
+            Object.keys(currentFields).forEach(currId => {
+                const currField = document.getElementById(currId);
+                if (currField) {
+                    currField.addEventListener('input', () => {
+                        if (sameAsCurrentCheckbox?.checked) {
+                            const permField = document.getElementById(currentFields[currId]);
+                            if (permField) {
+                                permField.value = currField.value;
+                            }
+                        }
+                    });
+                }
+            });
+
+            sameAsCurrentCheckbox?.addEventListener('change', copyCurrentToPermanent);
+
+            // Initialize
+            showSection('address');
+            copyCurrentToPermanent();
+
+            // Connect footer buttons to form
+            setTimeout(() => {
+                const btnNext = document.getElementById('btnNext');
+                const btnSave = document.getElementById('btnSave');
+                const hiddenSubmit = document.getElementById('hiddenSubmit');
+
+                if (btnNext && hiddenSubmit) {
+                    btnNext.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        hiddenSubmit.click();
+                    });
+                }
+
+                if (btnSave && form) {
+                    btnSave.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        // Save without navigating
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert('Personal details saved successfully!');
+                        }).catch(err => {
+                            console.error('Save failed:', err);
+                        });
+                    });
+                }
+            }, 100);
+
+            // Auto-save to localStorage
+            const form = document.getElementById('personalDetailsForm');
+            if (form) {
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    // Load saved value
+                    const savedValue = localStorage.getItem('pd_' + input.id);
+                    if (savedValue && !input.value) {
+                        if (input.type === 'checkbox') {
+                            input.checked = savedValue === 'true';
+                        } else {
+                            input.value = savedValue;
+                        }
+                    }
+
+                    // Save on change
+                    input.addEventListener('change', () => {
+                        const value = input.type === 'checkbox' ? input.checked : input.value;
+                        localStorage.setItem('pd_' + input.id, value);
+                    });
+                });
+
+                // Clear localStorage on submit
+                form.addEventListener('submit', () => {
+                    inputs.forEach(input => {
+                        localStorage.removeItem('pd_' + input.id);
+                    });
+                });
+            }
+        })();
+    </script>
+}

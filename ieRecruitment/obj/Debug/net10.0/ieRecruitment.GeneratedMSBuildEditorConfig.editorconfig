@@ -1,0 +1,119 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = ieRecruitment
+build_property.RootNamespace = ieRecruitment
+build_property.ProjectDir = /Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFzaGJvYXJkL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/EducationalDetails/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRWR1Y2F0aW9uYWxEZXRhaWxzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/FamilyDetails/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRmFtaWx5RGV0YWlscy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/OtherDetails/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvT3RoZXJEZXRhaWxzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/PersonalDetails/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGVyc29uYWxEZXRhaWxzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/ProfessionalSummary/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUHJvZmVzc2lvbmFsU3VtbWFyeS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/RecruitmentForm/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVjcnVpdG1lbnRGb3JtL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_ChatbotWidget.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19DaGF0Ym90V2lkZ2V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_LayoutAuth.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRBdXRoLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_LayoutRecruitment.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRSZWNydWl0bWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_ProfileCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19Qcm9maWxlQ2FyZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_RecruitmentFooter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19SZWNydWl0bWVudEZvb3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_RecruitmentFormLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19SZWNydWl0bWVudEZvcm1MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_RecruitmentHeader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19SZWNydWl0bWVudEhlYWRlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_StatusStepper.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19TdGF0dXNTdGVwcGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/SubmissionComplete/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU3VibWlzc2lvbkNvbXBsZXRlL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/WorkExperience/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvV29ya0V4cGVyaWVuY2UvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/sayanmaity/Desktop2/ieRecruitmentMain/ieRecruitment/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

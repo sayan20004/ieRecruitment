@@ -1,0 +1,553 @@
+@model ieRecruitment.Models.FamilyDetailsViewModel
+
+@{
+    ViewData["Title"] = "Family Details";
+    Layout = "~/Views/Shared/_RecruitmentFormLayout.cshtml";
+}
+
+<div class="card p-3 h-100">
+    <!-- Tab Toggle -->
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <div class="btn-group" role="group" aria-label="Section toggle">
+            <input type="radio" class="btn-check" name="sectionToggle" id="btnFamily" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary tab-toggle-btn me-2" for="btnFamily">Family</label>
+
+            <input type="radio" class="btn-check" name="sectionToggle" id="btnLanguages" autocomplete="off">
+            <label class="btn btn-outline-secondary tab-toggle-btn" for="btnLanguages">Languages Known</label>
+        </div>
+    </div>
+
+    <form asp-action="Index" asp-controller="FamilyDetails" method="post" id="familyDetailsForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Hidden fields to store JSON data -->
+        <input type="hidden" asp-for="FamilyMembersJSON" id="familyMembersJSON" />
+        <input type="hidden" asp-for="EmergencyContactsJSON" id="emergencyContactsJSON" />
+        <input type="hidden" asp-for="LanguagesJSON" id="languagesJSON" />
+
+        <!-- Family & Emergency Section -->
+        <div id="familySection">
+            <div class="scrollable-card-body">
+                <!-- Family Details -->
+                <div class="mb-4">
+                    <div class="fw-bold text-primary mb-3">Family Details:</div>
+
+                    <div class="row g-2 align-items-end mb-2">
+                        <div class="col-lg-5 col-md-4">
+                            <input id="famName" type="text" class="form-control form-control-sm" placeholder="Member Name *">
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <select id="famRel" class="form-select form-select-sm">
+                                <option value="">Relationship *</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Sibling</option>
+                                <option>Spouse</option>
+                                <option>Guardian</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <input id="famOcc" type="text" class="form-control form-control-sm" placeholder="Occupation *">
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-12 d-grid">
+                            <button type="button" class="btn btn-primary btn-sm" id="addFamilyBtn">
+                                <i class="bi bi-plus-circle me-1"></i>Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-0" id="familyTable">
+                            <thead class="table-primary text-center">
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Relationship</th>
+                                    <th>Occupation</th>
+                                    <th class="actions-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center" id="familyTableBody">
+                                <tr class="no-data">
+                                    <td colspan="4" class="text-muted">No family members added yet. Add one above.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact Details -->
+                <div class="mb-4">
+                    <div class="fw-bold text-danger mb-3">Emergency Contact Details:</div>
+
+                    <div class="row g-2 align-items-end mb-2">
+                        <div class="col-lg-3 col-md-3">
+                            <input id="emgName" type="text" class="form-control form-control-sm" placeholder="Contact Name *">
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <select id="emgRel" class="form-select form-select-sm">
+                                <option value="">Relationship *</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Sibling</option>
+                                <option>Spouse</option>
+                                <option>Friend</option>
+                                <option>Guardian</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <input id="emgPhone" type="tel" class="form-control form-control-sm" 
+                                   placeholder="Phone Number *" maxlength="15">
+                        </div>
+                        <div class="col-lg-3 col-md-2">
+                            <input id="emgEmail" type="email" class="form-control form-control-sm" placeholder="Email (optional)">
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-12 d-grid">
+                            <button type="button" class="btn btn-primary btn-sm" id="addEmergencyBtn">
+                                <i class="bi bi-plus-circle me-1"></i>Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-0" id="emergencyTable">
+                            <thead class="table-danger text-center">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relationship</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th class="actions-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center" id="emergencyTableBody">
+                                <tr class="no-data">
+                                    <td colspan="5" class="text-muted">No emergency contacts added yet. Add one above.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Languages Section -->
+        <div id="languagesSection" style="display:none;">
+            <div class="scrollable-card-body">
+                <div class="fw-bold text-primary mb-3">Languages Known:</div>
+
+                <div class="row g-2 align-items-end mb-2">
+                    <div class="col-lg-3 col-md-3">
+                        <select id="langName" class="form-select form-select-sm">
+                            <option value="">Language *</option>
+                            <option>English</option>
+                            <option>Bengali</option>
+                            <option>Hindi</option>
+                            <option>Tamil</option>
+                            <option>Telugu</option>
+                            <option>Marathi</option>
+                            <option>Gujarati</option>
+                            <option>Kannada</option>
+                            <option>Malayalam</option>
+                            <option>Punjabi</option>
+                            <option>Urdu</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <select id="langRead" class="form-select form-select-sm">
+                            <option value="">Read *</option>
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <select id="langWrite" class="form-select form-select-sm">
+                            <option value="">Write *</option>
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-2">
+                        <select id="langSpeak" class="form-select form-select-sm">
+                            <option value="">Speak *</option>
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-12 d-grid">
+                        <button type="button" class="btn btn-primary btn-sm" id="addLanguageBtn">
+                            <i class="bi bi-plus-circle me-1"></i>Add
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle mb-0" id="languageTable">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th>Language</th>
+                                <th>Read</th>
+                                <th>Write</th>
+                                <th>Speak</th>
+                                <th class="actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center" id="languageTableBody">
+                            <tr class="no-data">
+                                <td colspan="5" class="text-muted">No languages added yet. Add one above.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Submit Button -->
+        <button type="submit" id="hiddenSubmit" style="display:none;"></button>
+    </form>
+</div>
+
+@section PageScripts {
+    <script>
+        (() => {
+            'use strict';
+
+            // Section Toggle
+            const familySection = document.getElementById('familySection');
+            const languagesSection = document.getElementById('languagesSection');
+            const btnFamily = document.getElementById('btnFamily');
+            const btnLanguages = document.getElementById('btnLanguages');
+
+            function showSection(section) {
+                if (section === 'family') {
+                    familySection.style.display = '';
+                    languagesSection.style.display = 'none';
+                } else {
+                    familySection.style.display = 'none';
+                    languagesSection.style.display = '';
+                }
+            }
+
+            btnFamily?.addEventListener('change', (e) => {
+                if (e.target.checked) showSection('family');
+            });
+
+            btnLanguages?.addEventListener('change', (e) => {
+                if (e.target.checked) showSection('languages');
+            });
+
+            // Data Arrays
+            let familyMembers = [];
+            let emergencyContacts = [];
+            let languages = [];
+
+            // Family Members CRUD
+            const addFamilyBtn = document.getElementById('addFamilyBtn');
+            const familyTableBody = document.getElementById('familyTableBody');
+
+            addFamilyBtn?.addEventListener('click', () => {
+                const name = document.getElementById('famName').value.trim();
+                const relationship = document.getElementById('famRel').value;
+                const occupation = document.getElementById('famOcc').value.trim();
+
+                if (!name || !relationship || !occupation) {
+                    alert('Please fill all required fields for family member');
+                    return;
+                }
+
+                familyMembers.push({ name, relationship, occupation });
+                renderFamilyTable();
+                clearFamilyForm();
+                updateHiddenField('familyMembersJSON', familyMembers);
+            });
+
+            function renderFamilyTable() {
+                if (familyMembers.length === 0) {
+                    familyTableBody.innerHTML = '<tr class="no-data"><td colspan="4" class="text-muted">No family members added yet. Add one above.</td></tr>';
+                    return;
+                }
+
+                familyTableBody.innerHTML = familyMembers.map((member, index) => `
+                    <tr>
+                        <td class="text-start ps-2">${member.name}</td>
+                        <td>${member.relationship}</td>
+                        <td>${member.occupation}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-outline-primary" onclick="editFamily(${index})" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteFamily(${index})" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function clearFamilyForm() {
+                document.getElementById('famName').value = '';
+                document.getElementById('famRel').value = '';
+                document.getElementById('famOcc').value = '';
+            }
+
+            window.editFamily = (index) => {
+                const member = familyMembers[index];
+                document.getElementById('famName').value = member.name;
+                document.getElementById('famRel').value = member.relationship;
+                document.getElementById('famOcc').value = member.occupation;
+                familyMembers.splice(index, 1);
+                renderFamilyTable();
+                updateHiddenField('familyMembersJSON', familyMembers);
+            };
+
+            window.deleteFamily = (index) => {
+                if (confirm('Delete this family member?')) {
+                    familyMembers.splice(index, 1);
+                    renderFamilyTable();
+                    updateHiddenField('familyMembersJSON', familyMembers);
+                }
+            };
+
+            // Emergency Contacts CRUD
+            const addEmergencyBtn = document.getElementById('addEmergencyBtn');
+            const emergencyTableBody = document.getElementById('emergencyTableBody');
+
+            addEmergencyBtn?.addEventListener('click', () => {
+                const name = document.getElementById('emgName').value.trim();
+                const relationship = document.getElementById('emgRel').value;
+                const phone = document.getElementById('emgPhone').value.trim();
+                const email = document.getElementById('emgEmail').value.trim();
+
+                if (!name || !relationship || !phone) {
+                    alert('Please fill all required fields for emergency contact');
+                    return;
+                }
+
+                emergencyContacts.push({ name, relationship, phone, email });
+                renderEmergencyTable();
+                clearEmergencyForm();
+                updateHiddenField('emergencyContactsJSON', emergencyContacts);
+            });
+
+            function renderEmergencyTable() {
+                if (emergencyContacts.length === 0) {
+                    emergencyTableBody.innerHTML = '<tr class="no-data"><td colspan="5" class="text-muted">No emergency contacts added yet. Add one above.</td></tr>';
+                    return;
+                }
+
+                emergencyTableBody.innerHTML = emergencyContacts.map((contact, index) => `
+                    <tr>
+                        <td class="text-start ps-2">${contact.name}</td>
+                        <td>${contact.relationship}</td>
+                        <td>${contact.phone}</td>
+                        <td>${contact.email || '—'}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-outline-primary" onclick="editEmergency(${index})" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteEmergency(${index})" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function clearEmergencyForm() {
+                document.getElementById('emgName').value = '';
+                document.getElementById('emgRel').value = '';
+                document.getElementById('emgPhone').value = '';
+                document.getElementById('emgEmail').value = '';
+            }
+
+            window.editEmergency = (index) => {
+                const contact = emergencyContacts[index];
+                document.getElementById('emgName').value = contact.name;
+                document.getElementById('emgRel').value = contact.relationship;
+                document.getElementById('emgPhone').value = contact.phone;
+                document.getElementById('emgEmail').value = contact.email || '';
+                emergencyContacts.splice(index, 1);
+                renderEmergencyTable();
+                updateHiddenField('emergencyContactsJSON', emergencyContacts);
+            };
+
+            window.deleteEmergency = (index) => {
+                if (confirm('Delete this emergency contact?')) {
+                    emergencyContacts.splice(index, 1);
+                    renderEmergencyTable();
+                    updateHiddenField('emergencyContactsJSON', emergencyContacts);
+                }
+            };
+
+            // Languages CRUD
+            const addLanguageBtn = document.getElementById('addLanguageBtn');
+            const languageTableBody = document.getElementById('languageTableBody');
+
+            addLanguageBtn?.addEventListener('click', () => {
+                const name = document.getElementById('langName').value;
+                const canRead = document.getElementById('langRead').value;
+                const canWrite = document.getElementById('langWrite').value;
+                const canSpeak = document.getElementById('langSpeak').value;
+
+                if (!name || !canRead || !canWrite || !canSpeak) {
+                    alert('Please fill all required fields for language');
+                    return;
+                }
+
+                languages.push({ name, canRead, canWrite, canSpeak });
+                renderLanguageTable();
+                clearLanguageForm();
+                updateHiddenField('languagesJSON', languages);
+            });
+
+            function renderLanguageTable() {
+                if (languages.length === 0) {
+                    languageTableBody.innerHTML = '<tr class="no-data"><td colspan="5" class="text-muted">No languages added yet. Add one above.</td></tr>';
+                    return;
+                }
+
+                languageTableBody.innerHTML = languages.map((lang, index) => `
+                    <tr>
+                        <td>${lang.name}</td>
+                        <td>${lang.canRead}</td>
+                        <td>${lang.canWrite}</td>
+                        <td>${lang.canSpeak}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-outline-primary" onclick="editLanguage(${index})" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteLanguage(${index})" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function clearLanguageForm() {
+                document.getElementById('langName').value = '';
+                document.getElementById('langRead').value = '';
+                document.getElementById('langWrite').value = '';
+                document.getElementById('langSpeak').value = '';
+            }
+
+            window.editLanguage = (index) => {
+                const lang = languages[index];
+                document.getElementById('langName').value = lang.name;
+                document.getElementById('langRead').value = lang.canRead;
+                document.getElementById('langWrite').value = lang.canWrite;
+                document.getElementById('langSpeak').value = lang.canSpeak;
+                languages.splice(index, 1);
+                renderLanguageTable();
+                updateHiddenField('languagesJSON', languages);
+            };
+
+            window.deleteLanguage = (index) => {
+                if (confirm('Delete this language?')) {
+                    languages.splice(index, 1);
+                    renderLanguageTable();
+                    updateHiddenField('languagesJSON', languages);
+                }
+            };
+
+            // Update Hidden Fields
+            function updateHiddenField(fieldId, data) {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.value = JSON.stringify(data);
+                }
+            }
+
+            // Initialize
+            showSection('family');
+
+            // Load existing data if any
+            const existingFamily = document.getElementById('familyMembersJSON').value;
+            const existingEmergency = document.getElementById('emergencyContactsJSON').value;
+            const existingLanguages = document.getElementById('languagesJSON').value;
+
+            if (existingFamily) {
+                familyMembers = JSON.parse(existingFamily);
+                renderFamilyTable();
+            }
+            if (existingEmergency) {
+                emergencyContacts = JSON.parse(existingEmergency);
+                renderEmergencyTable();
+            }
+            if (existingLanguages) {
+                languages = JSON.parse(existingLanguages);
+                renderLanguageTable();
+            }
+
+            // ── Auto-fill languages from CV extraction ──
+            if (window.__cvLanguages && languages.length === 0) {
+                const validNames = Array.from(document.getElementById('langName').options)
+                    .map(o => o.value).filter(v => v);
+
+                window.__cvLanguages.forEach(lang => {
+                    if (!lang.name) return;
+                    // Case-insensitive match against valid select options
+                    const matchedName = validNames.find(
+                        v => v.toLowerCase() === lang.name.toLowerCase()
+                    );
+                    if (!matchedName) return; // skip unknown languages
+
+                    const normYesNo = (val) => {
+                        if (!val) return 'No';
+                        const v = val.toString().toLowerCase().trim();
+                        return (v === 'yes' || v === 'true' || v === '1') ? 'Yes' : 'No';
+                    };
+
+                    languages.push({
+                        name: matchedName,
+                        canRead: normYesNo(lang.canRead),
+                        canWrite: normYesNo(lang.canWrite),
+                        canSpeak: normYesNo(lang.canSpeak)
+                    });
+                });
+
+                if (languages.length > 0) {
+                    renderLanguageTable();
+                    updateHiddenField('languagesJSON', languages);
+                }
+                delete window.__cvLanguages;
+            }
+
+            // Connect footer buttons to form
+            setTimeout(() => {
+                const btnNext = document.getElementById('btnNext');
+                const btnSave = document.getElementById('btnSave');
+                const hiddenSubmit = document.getElementById('hiddenSubmit');
+                const form = document.getElementById('familyDetailsForm');
+
+                if (btnNext && hiddenSubmit) {
+                    btnNext.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        hiddenSubmit.click();
+                    });
+                }
+
+                if (btnSave && form) {
+                    btnSave.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert('Family details saved successfully!');
+                        }).catch(err => {
+                            console.error('Save failed:', err);
+                        });
+                    });
+                }
+            }, 100);
+        })();
+    </script>
+}

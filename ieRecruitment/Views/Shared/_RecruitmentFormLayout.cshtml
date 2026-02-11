@@ -1,0 +1,830 @@
+@{
+    Layout = "~/Views/Shared/_LayoutRecruitment.cshtml";
+}
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+    <style>
+        /* Font */
+        @@font-face {
+            font-family: 'Manrope';
+            src: url('/fonts/Manrope-Medium.woff2') format('woff2'),
+                 url('/fonts/Manrope-Medium.woff') format('woff');
+            font-weight: 500; font-style: normal; font-display: swap;
+        }
+
+        /* Base */
+        :root { --header-h: 56px; }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0; font-size: .85rem; background: #f8f9fa; overflow: hidden;
+            font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* App Frame */
+        #app { height: 100vh; display: flex; flex-direction: column; }
+        #content { flex: 1 1 auto; overflow-y: auto; }
+
+        /* Header */
+        header.app-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1040;
+            height: var(--header-h); display: flex; align-items: center;
+            background: transparent; border-bottom: 1px solid transparent;
+            transition: background-color .2s, box-shadow .2s, border-color .2s;
+        }
+        header.app-header.scrolled {
+            background: #fff !important; border-bottom-color: #e9ecef !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        /* Footer */
+        footer.app-footer { border-top: 1px solid #e9ecef; }
+
+        /* Portal Heading */
+        .portal-heading { text-align: center; font-size: .95rem; letter-spacing: 1px; margin: 0; }
+        @@media (min-width: 576px) { .portal-heading { font-size: 1rem; } }
+
+        /* Text Primary Override */
+        .text-primary { color: #0461A3 !important; }
+
+        /* Cards */
+        .card {
+            background: #fff; border: 1px solid #d9e3f0; border-radius: .75rem;
+            padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.03);
+        }
+        .card h6, .fw-bold { margin-bottom: 6px; font-size: .9rem; }
+        .col-md-3 > .card { min-height: 450px; }
+        .col-md-9 > .card { height: 450px; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Scrollable Card Body */
+        .scrollable-card-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+        .scrollable-card-body::-webkit-scrollbar { width: 6px; }
+        .scrollable-card-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
+
+        /* Form Overrides */
+        .form-control { font-size: 0.8rem !important; }
+        .form-label { font-size: 0.8rem; font-weight: 600; }
+        .form-select { font-size: 0.85rem; }
+        .form-control::placeholder, .card input::placeholder, .card textarea::placeholder { color: #aaa; font-size: .8rem; }
+        .form-check-input { border: var(--bs-border-width) solid #b5b6b7 !important; }
+
+        /* Button Overrides */
+        .btn { font-size: 0.82rem; }
+        .btn-primary { border-radius: 6px; background: #003b5b; }
+        .btn-check:checked + .btn { background: #fff; color: #444; border-color: #ccc; box-shadow: 0 2px 5px rgba(0,0,0,.15); font-weight: 600; }
+        .accordion-button { color: #939393; }
+
+        /* Tab Toggle Buttons */
+        .tab-toggle-btn {
+            min-width: 140px; height: 44px; padding: 0 20px; font-size: 16px; font-weight: 500;
+            line-height: 1; border-radius: 8px; background-color: #fff; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease; color: #4b4b4b; border: 1px solid #d6d6d6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .tab-toggle-btn:hover { background-color: #f8fafc; }
+        .btn-check:checked + .tab-toggle-btn {
+            color: #2563eb; border: 2px solid #2563eb; background-color: #fff;
+            box-shadow: none; font-weight: 500;
+        }
+        .btn-check:focus + .tab-toggle-btn, .btn-check:checked:focus + .tab-toggle-btn,
+        .tab-toggle-btn:focus, .tab-toggle-btn:active { box-shadow: none; outline: none; }
+
+        /* Table Overrides */
+        .table { font-size: 13px; border: 1px solid #d9e3f0; border-radius: 10px; overflow: hidden; }
+        .table thead th { background: #003b5b; color: #fff; font-weight: 500; padding: 10px 12px; }
+        .table tbody td { background: #fff; border-top: 1px solid #e5e7eb; padding: 6px; }
+
+        /* Utility Classes */
+        .actions-col { width: 120px; white-space: nowrap; }
+        .section-title { font-weight: 600; }
+        .req::after { content: " *"; color: #dc3545; }
+        .readonly { background: #f9fafb; }
+        .hint { font-size: .875rem; color: #6b7280; }
+        .scroll-body { max-height: 60vh; overflow-y: auto; overflow-x: hidden; }
+        .icon-btn { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+        fieldset.fieldset { border: 1px dashed #dbe3ee; border-radius: .5rem; }
+        fieldset.fieldset > legend { font-weight: 600; margin-bottom: .5rem; }
+
+        /* Intern Details */
+        #internDetails .form-label { margin-bottom: .25rem; font-weight: 500; font-size: .85rem; }
+        #internDetails .form-control.form-control-sm { font-size: .85rem; }
+        #internDetails .form-text { margin-top: .25rem; }
+        #internDetails .input-group-text { padding: .25rem .5rem; font-size: .85rem; }
+        #internDetails .table th, #internDetails .table td { vertical-align: middle; }
+        #internDetails td:nth-child(5), #internDetails td:nth-child(6) { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Flatpickr Tweaks */
+        .flatpickr-monthSelect-month { width: 30% !important; }
+        .flatpickr-current-month { font-size: 100% !important; }
+
+        /* Remove Text Shadows */
+        .app-header, .app-header *, h1, h2, h3, h4, h5, h6, p, label, small, span, a, .btn { text-shadow: none !important; }
+
+        /* Responsive */
+        @@media (max-width: 1400px) {
+            .col-md-9 > .card { height: 430px; } .col-md-3 > .card { min-height: 430px; }
+            .portal-heading { font-size: .95rem; }
+        }
+        @@media (max-width: 1200px) { .card { padding: 6px; } }
+        @@media (max-width: 1024px) {
+            .col-md-9 > .card { height: 410px; } .col-md-3 > .card { min-height: 410px; }
+            .portal-heading { font-size: .9rem; }
+        }
+        @@media (max-width: 992px) {
+            .col-md-9 > .card { height: 410px; } .col-md-3 > .card { min-height: 410px; }
+        }
+        @@media (max-width: 576px) {
+            :root { --header-h: 64px; }
+            body { overflow: auto; }
+            .col-md-9 > .card { height: 380px; } .col-md-3 > .card { min-height: 380px; }
+        }
+        @@media (max-width: 425px) {
+            body { overflow: auto; }
+            .col-md-9 > .card { height: 360px; } .col-md-3 > .card { min-height: 360px; }
+        }
+        @@media (max-width: 375px) {
+            body { overflow: auto; }
+            .col-md-9 > .card { height: 340px; } .col-md-3 > .card { min-height: 340px; }
+            .portal-heading { font-size: .85rem; }
+        }
+        @@media (max-width: 320px) {
+            body { overflow: auto; }
+            .col-md-9 > .card { height: 320px; } .col-md-3 > .card { min-height: 320px; }
+        }
+    </style>
+    @RenderSection("PageStyles", required: false)
+}
+
+<div id="app">
+    @* Render Recruitment Header Component *@
+    @await Html.PartialAsync("_RecruitmentHeader")
+
+    @* Render Status Stepper Component *@
+    @await Html.PartialAsync("_StatusStepper")
+
+    <main id="content" class="container-fluid mt-3 mb-5 mb-md-5 mb-sm-3">
+        <div class="row g-3">
+            @* Render Profile Card Component (Left Column) *@
+            @await Html.PartialAsync("_ProfileCard")
+
+            @* Right Column - Dynamic Content from each view *@
+            <div class="col-md-9">
+                @RenderBody()
+            </div>
+        </div>
+
+        @* Shared preview modal *@
+        <div class="modal fade" id="fileModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header py-2">
+                        <h6 class="modal-title mb-0">Document Preview</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-2" id="modalContent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    @* Render Chatbot Widget Component *@
+    @await Html.PartialAsync("_ChatbotWidget")
+    
+    @* Render Recruitment Footer Component *@
+    @await Html.PartialAsync("_RecruitmentFooter")
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+    
+    <script>
+        // Common JavaScript for all recruitment forms
+        (() => {
+            'use strict';
+
+            // Utility functions
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+            // File preview functionality
+            const modal = document.getElementById('fileModal');
+            const mBody = document.getElementById('modalContent');
+
+            window.openPreview = function(file) {
+                if (!modal || !mBody) return;
+                const url = URL.createObjectURL(file);
+                const lower = (file.name || '').toLowerCase();
+
+                mBody.innerHTML = '';
+                if (file.type.startsWith('image/')) {
+                    mBody.innerHTML = `<img src="${url}" class="img-fluid rounded d-block mx-auto" alt="Preview">`;
+                } else if (file.type === 'application/pdf' || lower.endsWith('.pdf')) {
+                    mBody.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="80vh">`;
+                } else if (lower.endsWith('.doc') || lower.endsWith('.docx')) {
+                    mBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <p class="mb-2 text-muted">Preview not available for Word documents.</p>
+                            <a href="${url}" download class="btn btn-sm btn-primary">⬇ Download ${file.name}</a>
+                        </div>`;
+                } else {
+                    mBody.innerHTML = `<p class="text-danger text-center my-3">Unsupported file format.</p>`;
+                }
+
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+                bsModal.show();
+                modal.addEventListener('hidden.bs.modal', () => URL.revokeObjectURL(url), { once: true });
+            };
+
+            // Upload letter handling (common for all forms)
+            document.addEventListener('change', function(e) {
+                if (!e.target.classList.contains('upload-letter')) return;
+
+                const file = e.target.files?.[0];
+                const container = e.target.closest('.col-12, .col-md-3, .col-lg-4, .col-md-6') || e.target.parentElement;
+                const preview = container?.querySelector('.file-preview');
+                if (!preview) return;
+
+                preview.textContent = '';
+                if (!file) { preview.textContent = 'No file selected'; return; }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'me-2';
+                nameSpan.textContent = file.name;
+
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'text-primary';
+                link.textContent = '📄 View Uploaded Document';
+                link.addEventListener('click', (ev) => { ev.preventDefault(); openPreview(file); });
+
+                preview.appendChild(nameSpan);
+                preview.appendChild(link);
+            });
+
+            // Chatbot functionality with GSAP Draggable
+            const fabBtn = document.getElementById('mendine-chatbot');
+            const panel = document.getElementById('mc-panel');
+            const closeBtn = document.getElementById('mc-close');
+            const sendBtn = document.getElementById('mc-send');
+            const input = document.getElementById('mc-input');
+            const body = document.getElementById('mc-body');
+            const tip = document.getElementById('mc-tip');
+
+            // Make chatbot draggable with GSAP
+            if (fabBtn && typeof Draggable !== 'undefined') {
+                // Load saved position
+                const savedPosition = localStorage.getItem('chatbot-position');
+                if (savedPosition) {
+                    try {
+                        const { x, y } = JSON.parse(savedPosition);
+                        gsap.set(fabBtn, { x: x, y: y });
+                    } catch (e) {
+                        console.error('Error loading position:', e);
+                    }
+                }
+
+                let hasMoved = false;
+
+                Draggable.create(fabBtn, {
+                    type: "x,y",
+                    edgeResistance: 0.65,
+                    bounds: window,
+                    inertia: true,
+                    autoScroll: 1,
+                    cursor: "move",
+                    onDragStart: function() {
+                        hasMoved = false;
+                        fabBtn.style.cursor = 'grabbing';
+                    },
+                    onDrag: function() {
+                        hasMoved = true;
+                        // Move panel along with FAB while open
+                        if (panel && panel.classList.contains('open')) {
+                            positionPanel();
+                        }
+                    },
+                    onDragEnd: function() {
+                        fabBtn.style.cursor = 'move';
+                        
+                        // Save position to localStorage
+                        const transform = gsap.getProperty(fabBtn, "x,y");
+                        localStorage.setItem('chatbot-position', JSON.stringify({
+                            x: transform.x || 0,
+                            y: transform.y || 0
+                        }));
+
+                        // Final reposition if panel is open
+                        if (panel && panel.classList.contains('open')) {
+                            positionPanel();
+                        }
+
+                        // Reset hasMoved after a delay to prevent click
+                        setTimeout(() => {
+                            hasMoved = false;
+                        }, 100);
+                    }
+                });
+
+                // Helper: position panel relative to FAB button
+                function positionPanel() {
+                    if (!panel || !fabBtn) return;
+                    const fabRect = fabBtn.getBoundingClientRect();
+                    const panelW = Math.min(390, window.innerWidth - 16);
+                    const gap = 8;
+                    const panelH = panel.offsetHeight || 400;
+
+                    // Determine vertical: prefer above, fallback below
+                    let top;
+                    const spaceAbove = fabRect.top - gap;
+                    const spaceBelow = window.innerHeight - fabRect.bottom - gap;
+
+                    if (spaceAbove >= panelH || spaceAbove >= spaceBelow) {
+                        // Place above: bottom of panel aligns near top of FAB
+                        top = fabRect.top - gap - Math.min(panelH, spaceAbove);
+                        if (top < 4) top = 4;
+                    } else {
+                        // Place below: top of panel just below FAB
+                        top = fabRect.bottom + gap;
+                    }
+
+                    // Horizontal: align right edge with FAB right, clamp
+                    let left = fabRect.right - panelW;
+                    if (left < 8) left = 8;
+                    if (left + panelW > window.innerWidth - 8) left = window.innerWidth - panelW - 8;
+
+                    panel.style.top = top + 'px';
+                    panel.style.left = left + 'px';
+                    panel.style.maxHeight = Math.max(spaceAbove, spaceBelow) + 'px';
+                }
+
+                // Click handler: toggle panel open/close
+                fabBtn.addEventListener('click', function(e) {
+                    if (hasMoved) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                    
+                    if (panel.classList.contains('open')) {
+                        // Close
+                        panel.classList.remove('open');
+                        panel.setAttribute('aria-hidden', 'true');
+                    } else {
+                        // Open: position relative to FAB then show
+                        positionPanel();
+                        panel.classList.add('open');
+                        panel.setAttribute('aria-hidden', 'false');
+                    }
+                    if (tip) {
+                        tip.setAttribute('aria-hidden', 'true');
+                        tip.style.display = 'none';
+                    }
+                });
+            }
+
+            if (closeBtn && panel) {
+                closeBtn.addEventListener('click', function() {
+                    panel.classList.remove('open');
+                    panel.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            if (sendBtn && input && body) {
+                // Conversation history for context-aware responses
+                const chatHistory = [];
+
+                // ── Detect current page for context-aware chatbot ──
+                function detectCurrentPage() {
+                    const p = window.location.pathname.toLowerCase();
+                    if (p.includes('recruitmentform'))      return 'Recruitment Form (Step 1)';
+                    if (p.includes('professionalsummary'))   return 'Professional Summary (Step 2)';
+                    if (p.includes('personaldetails'))       return 'Personal Details (Step 3)';
+                    if (p.includes('familydetails'))         return 'Family Details (Step 4)';
+                    if (p.includes('educationaldetails'))    return 'Educational Details (Step 5)';
+                    if (p.includes('workexperience'))        return 'Work Experience (Step 6)';
+                    if (p.includes('otherdetails'))          return 'Other Details & References (Step 7)';
+                    return 'Unknown Page';
+                }
+
+                // ── Gather which fields were auto-filled from CV ──
+                function getAutoFilledFields() {
+                    const raw = localStorage.getItem('cvExtractedData');
+                    if (!raw) return [];
+                    let data;
+                    try { data = JSON.parse(raw); } catch { return []; }
+
+                    const filled = [];
+                    const p = window.location.pathname.toLowerCase();
+
+                    if (p.includes('recruitmentform')) {
+                        if (data.firstName)  filled.push('First Name');
+                        if (data.middleName) filled.push('Middle Name');
+                        if (data.lastName)   filled.push('Last Name');
+                    } else if (p.includes('professionalsummary')) {
+                        if (data.professionalSummary) filled.push('Professional Summary');
+                    } else if (p.includes('personaldetails')) {
+                        if (data.currentAddress) {
+                            const a = data.currentAddress;
+                            if (a.addressLine1) filled.push('Address Line 1');
+                            if (a.city)         filled.push('City');
+                            if (a.state)        filled.push('State');
+                            if (a.pinCode)      filled.push('Pin Code');
+                            if (a.country)      filled.push('Country');
+                        }
+                        if (data.gender)        filled.push('Gender');
+                        if (data.nationality)   filled.push('Nationality');
+                        if (data.maritalStatus) filled.push('Marital Status');
+                        if (data.dateOfBirth)   filled.push('Date of Birth');
+                    } else if (p.includes('familydetails')) {
+                        if (data.languages && data.languages.length > 0) filled.push('Languages Known');
+                    } else if (p.includes('educationaldetails')) {
+                        if (data.education) {
+                            const e = data.education;
+                            if (e.phd && e.phd.university)          filled.push('PhD details');
+                            if (e.masters && e.masters.university)  filled.push('Masters details');
+                            if (e.bachelors && e.bachelors.university) filled.push('Bachelors details');
+                            if (e.diploma && e.diploma.college)     filled.push('Diploma details');
+                            if (e.twelfth && e.twelfth.school)      filled.push('12th details');
+                            if (e.tenth && e.tenth.school)          filled.push('10th details');
+                            if (e.projects && e.projects.length > 0) filled.push('Project details');
+                        }
+                    } else if (p.includes('workexperience')) {
+                        if (data.workExperience) {
+                            if (data.workExperience.experienceType) filled.push('Experience Type (Fresher/Experienced)');
+                            if (data.workExperience.experiences && data.workExperience.experiences.length > 0)
+                                filled.push('Employment History');
+                        }
+                    }
+                    return filled;
+                }
+
+                // ── Gather visible field labels on the current page ──
+                function getPageFields() {
+                    const labels = [];
+                    document.querySelectorAll('.form-label, label').forEach(el => {
+                        const txt = (el.textContent || '').trim().replace(/\s+/g, ' ');
+                        if (txt && txt.length < 60 && !labels.includes(txt)) labels.push(txt);
+                    });
+                    return labels.slice(0, 30); // cap at 30 to keep prompt small
+                }
+
+                function escapeHtml(str) {
+                    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                }
+
+                function addMessage(role, text) {
+                    const div = document.createElement('div');
+                    div.className = 'mc-msg ' + role;
+                    div.innerHTML = '<div class="mc-bubble">' + escapeHtml(text) + '</div>';
+                    body.appendChild(div);
+                    body.scrollTop = body.scrollHeight;
+                    return div;
+                }
+
+                function showTyping() {
+                    const div = document.createElement('div');
+                    div.className = 'mc-msg assistant';
+                    div.id = 'mc-typing';
+                    div.innerHTML = '<div class="mc-bubble" style="display:flex;gap:4px;align-items:center;padding:12px 18px;">' +
+                        '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+                    body.appendChild(div);
+                    body.scrollTop = body.scrollHeight;
+                }
+
+                function removeTyping() {
+                    const t = document.getElementById('mc-typing');
+                    if (t) t.remove();
+                }
+
+                async function sendMessage() {
+                    const msg = input.value.trim();
+                    if (!msg) return;
+
+                    // Disable input while processing
+                    input.value = '';
+                    input.disabled = true;
+                    sendBtn.disabled = true;
+
+                    // Show user message
+                    addMessage('user', msg);
+                    chatHistory.push({ role: 'user', text: msg });
+
+                    // Show typing indicator
+                    showTyping();
+
+                    try {
+                        const resp = await fetch('/ChatBot/Chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: msg,
+                                history: chatHistory.slice(0, -1),
+                                currentPage: detectCurrentPage(),
+                                autoFilledFields: getAutoFilledFields(),
+                                pageFields: getPageFields()
+                            })
+                        });
+                        const result = await resp.json();
+                        removeTyping();
+
+                        const reply = result.reply || 'Sorry, I could not process that. Please try again.';
+                        addMessage('assistant', reply);
+                        chatHistory.push({ role: 'model', text: reply });
+                    } catch (err) {
+                        removeTyping();
+                        addMessage('assistant', 'Connection issue. Please check your internet and try again.');
+                    } finally {
+                        input.disabled = false;
+                        sendBtn.disabled = false;
+                        input.focus();
+                    }
+                }
+
+                sendBtn.addEventListener('click', sendMessage);
+                input.addEventListener('keypress', function(e) {
+                    if (e.which === 13) sendMessage();
+                });
+            }
+
+            // Show tip after delay
+            if (tip) {
+                setTimeout(() => {
+                    tip.setAttribute('aria-hidden', 'false');
+                    tip.style.display = 'block';
+                }, 3000);
+            }
+
+            // Previous button navigation
+            const btnPrevious = document.getElementById('btnPrevious');
+            if (btnPrevious) {
+                // Map of page navigation
+                const navigationMap = {
+                    'ProfessionalSummary': '/RecruitmentForm/Index',
+                    'PersonalDetails': '/ProfessionalSummary/Index',
+                    'FamilyDetails': '/PersonalDetails/Index',
+                    'EducationalDetails': '/FamilyDetails/Index',
+                    'WorkExperience': '/EducationalDetails/Index',
+                    'OtherDetails': '/WorkExperience/Index'
+                };
+
+                // Get current controller from URL or body attribute
+                const currentPath = window.location.pathname;
+                let currentController = null;
+                
+                for (const [controller, path] of Object.entries(navigationMap)) {
+                    if (currentPath.includes(controller)) {
+                        currentController = controller;
+                        break;
+                    }
+                }
+
+                // Hide Previous button on first page
+                if (currentPath.includes('RecruitmentForm')) {
+                    btnPrevious.style.display = 'none';
+                } else if (currentController && navigationMap[currentController]) {
+                    btnPrevious.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.href = navigationMap[currentController];
+                    });
+                } else {
+                    // Fallback to browser back
+                    btnPrevious.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.history.back();
+                    });
+                }
+            }
+
+            // Profile Progress Ring Animation
+            (function(){
+                /**
+                 * Update the circular progress ring around the avatar.
+                 * @@param {HTMLElement} wrap - the .progress-avatar element
+                 * @@param {number} percent - 0..100
+                 */
+                function setProfileCompletion(wrap, percent){
+                    if (!wrap) return;
+                    const clamped = Math.max(0, Math.min(100, Number(percent) || 0));
+                    const ring = wrap.querySelector('.ring-progress');
+                    const badge = wrap.querySelector('.progress-badge');
+
+                    if (!ring || !badge) return;
+
+                    // Circle math (r = 58, from SVG)
+                    const r = 58;
+                    const C = 2 * Math.PI * r;
+                    const offset = C * (1 - clamped / 100);
+
+                    ring.style.strokeDasharray = C.toFixed(2);
+                    ring.style.strokeDashoffset = offset.toFixed(2);
+                    badge.textContent = clamped + '%';
+
+                    wrap.classList.toggle('progress-complete', clamped >= 100);
+                }
+
+                // Initialize from data-progress attribute
+                const wrap = document.querySelector('.progress-avatar');
+                if (wrap) {
+                    const initial = Number(wrap.getAttribute('data-progress')) || 0;
+                    setProfileCompletion(wrap, initial);
+                }
+
+                // Expose helper globally
+                window.setProfileCompletion = (p) => setProfileCompletion(document.querySelector('.progress-avatar'), p);
+            })();
+
+            // ── CV Auto-Fill from localStorage ──────────────────────────
+            (function autoFillFromCv() {
+                const raw = localStorage.getItem('cvExtractedData');
+                if (!raw) return;
+
+                let data;
+                try { data = JSON.parse(raw); } catch { return; }
+
+                const path = window.location.pathname.toLowerCase();
+
+                // Helper: set field value only if currently empty
+                function fill(id, value) {
+                    if (!value) return;
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    // Trim existing value — Razor textareas may have whitespace
+                    const existing = (el.value || '').trim();
+                    if (existing !== '') return;
+                    el.value = value;
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // Helper: set <select> value
+                function fillSelect(id, value) {
+                    if (!value) return;
+                    const el = document.getElementById(id);
+                    if (!el || el.value) return;
+                    const opts = Array.from(el.options || []);
+                    const match = opts.find(o => o.value === value) ||
+                                  opts.find(o => o.value.toLowerCase() === value.toLowerCase());
+                    if (match) el.value = match.value; else el.value = value;
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // ── Professional Summary
+                if (path.includes('professionalsummary')) {
+                    fill('professionalSummary', data.professionalSummary);
+                    if (data.professionalSummary) {
+                        localStorage.setItem('professionalSummaryDraft', data.professionalSummary);
+                    }
+                }
+                // ── Personal Details
+                else if (path.includes('personaldetails')) {
+                    if (data.currentAddress) {
+                        fill('CurrentAddressLine1', data.currentAddress.addressLine1);
+                        fill('CurrentAddressLine2', data.currentAddress.addressLine2);
+                        fill('CurrentCity', data.currentAddress.city);
+                        fill('CurrentPostOffice', data.currentAddress.city); // fallback: use city
+                        fill('CurrentPinCode', data.currentAddress.pinCode);
+                        fill('CurrentDistrict', data.currentAddress.district);
+                        fill('CurrentState', data.currentAddress.state);
+                        fill('CurrentCountry', data.currentAddress.country);
+                    }
+                    fillSelect('Gender', data.gender);
+                    fillSelect('Nationality', data.nationality); // Fixed: was fill(), now fillSelect()
+                    fillSelect('MaritalStatus', data.maritalStatus);
+                    fill('dateOfBirth', data.dateOfBirth); // Fixed: case was 'DateOfBirth', actual id is 'dateOfBirth'
+                    fillSelect('Religion', data.religion);
+                    fillSelect('WillingToRelocate', data.willingToRelocate);
+                    fillSelect('SocialMediaPlatform', data.socialMediaPlatform);
+                    fill('ProfileLink', data.profileLink);
+                }
+                // ── Educational Details
+                else if (path.includes('educationaldetails')) {
+                    if (data.education) {
+                        const edu = data.education;
+                        if (edu.phd) {
+                            fill('PhdUniversity', edu.phd.university);
+                            fill('PhdDepartment', edu.phd.department);
+                            fill('PhdYear', edu.phd.year);
+                            fill('PhdGrade', edu.phd.grade);
+                        }
+                        if (edu.masters) {
+                            fill('MastersUniversity', edu.masters.university);
+                            fill('MastersCollege', edu.masters.college);
+                            fill('MastersYear', edu.masters.year);
+                            fill('MastersGrade', edu.masters.grade);
+                        }
+                        if (edu.bachelors) {
+                            fill('BachelorsUniversity', edu.bachelors.university);
+                            fill('BachelorsCollege', edu.bachelors.college);
+                            fill('BachelorsYear', edu.bachelors.year);
+                            fill('BachelorsGrade', edu.bachelors.grade);
+                        }
+                        if (edu.diploma) {
+                            fill('DiplomaInstitute', edu.diploma.college);
+                            fill('DiplomaYear', edu.diploma.year);
+                            fill('DiplomaGrade', edu.diploma.grade);
+                        }
+                        if (edu.twelfth) {
+                            fill('TwelfthSchool', edu.twelfth.school);
+                            fill('TwelfthYear', edu.twelfth.year);
+                            fill('TwelfthGrade', edu.twelfth.grade);
+                        }
+                        if (edu.tenth) {
+                            fill('TenthSchool', edu.tenth.school);
+                            fill('TenthYear', edu.tenth.year);
+                            fill('TenthGrade', edu.tenth.grade);
+                        }
+                        fill('ComputerProficiency', edu.computerProficiency);
+                        if (edu.projects && edu.projects.length > 0) {
+                            fill('ProjectName', edu.projects[0].name);
+                            fill('ProjectTenure', edu.projects[0].tenure);
+                            fill('ProjectDescription', edu.projects[0].description);
+                        }
+                    }
+                    // New educational fields
+                    fill('VocationalTraining', data.vocationalTraining);
+                    fill('Memberships', data.memberships);
+                    fill('OtherQualification', data.certifications);
+                    fill('ExtraCurricular', data.extraCurricular);
+                }
+                // ── Work Experience
+                else if (path.includes('workexperience')) {
+                    if (data.workExperience) {
+                        const we = data.workExperience;
+                        if (we.experienceType) {
+                            const radios = document.querySelectorAll('input[name="ExperienceType"]');
+                            radios.forEach(r => {
+                                if (r.value === we.experienceType) {
+                                    r.checked = true;
+                                    r.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                            });
+                        }
+                        // Auto-fill first experience entry into the form fields
+                        if (we.experiences && we.experiences.length > 0) {
+                            window.__cvExperiences = we.experiences;
+                            const first = we.experiences[0];
+                            // Experienced panel
+                            fill('expEmployer', first.company);
+                            fill('expDesignation', first.position);
+                            // Sales panel
+                            fill('inpEmployer', first.company);
+                            fill('inpDesignation', first.position);
+                        }
+                    }
+                    // Auto-fill internships for freshers
+                    if (data.internships && data.internships.length > 0) {
+                        window.__cvInternships = data.internships;
+                        const firstInt = data.internships[0];
+                        fill('intCompany', firstInt.company);
+                        fill('intPosition', firstInt.position);
+                        fill('intDesc', firstInt.description);
+                    }
+                }
+                // ── Family Details (languages) — auto-populate the table
+                else if (path.includes('familydetails')) {
+                    if (data.languages && data.languages.length > 0) {
+                        // Store for the page script to consume after it initializes
+                        window.__cvLanguages = data.languages;
+                        console.log('[CV Auto-Fill] Languages stored for FamilyDetails:', data.languages);
+                    } else {
+                        console.log('[CV Auto-Fill] No languages in CV data');
+                    }
+                }
+                // ── Other Details & References
+                else if (path.includes('otherdetails')) {
+                    console.log('[CV Auto-Fill] OtherDetails — whySuitable:', data.whySuitable, 'noticePeriod:', data.noticePeriod);
+                    fill('WhySuitable', data.whySuitable);
+                    fill('JoiningTimeDays', data.noticePeriod);
+                    // Store references for the page script to consume
+                    if (data.references && data.references.length > 0) {
+                        window.__cvReferences = data.references;
+                        console.log('[CV Auto-Fill] References stored for OtherDetails:', data.references);
+                    }
+                }
+
+                // Show a subtle info banner on pages that got auto-filled
+                if (data && !path.includes('recruitmentform') && path !== '/') {
+                    const banner = document.createElement('div');
+                    banner.className = 'alert alert-info alert-dismissible fade show py-1 px-3 mb-2';
+                    banner.style.fontSize = '0.8rem';
+                    banner.innerHTML =
+                        '<i class="bi bi-magic me-1"></i>Some fields were auto-filled from your CV. Please review and correct if needed.' +
+                        '<button type="button" class="btn-close p-2" style="font-size:.6rem" data-bs-dismiss="alert"></button>';
+                    const card = document.querySelector('.card');
+                    if (card) card.insertBefore(banner, card.firstChild);
+                }
+            })();
+        })();
+    </script>
+    
+    @RenderSection("PageScripts", required: false)
+}
