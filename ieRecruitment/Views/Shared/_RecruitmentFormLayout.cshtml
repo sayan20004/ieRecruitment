@@ -490,135 +490,134 @@
     </script>
 
     @* --- OFFLINE SYNC LOGIC (INVISIBLE BACKGROUND SYNC) --- *@
+    @* --- OFFLINE SYNC LOGIC (INVISIBLE BACKGROUND SYNC) --- *@
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // --- CONFIGURATION ---
-        const FORM_STORAGE_KEY = "ie_recruitment_data_v3"; // Changed version to reset old bad data
-        // ⚠️ Verify this port matches your running API 
-        const API_URL = "http://localhost:5277/api/Sync/save-offline-data"; 
-        const CANDIDATE_ID = document.getElementById("CandidateId")?.value;
-        const submitBtn = document.querySelector("button[type='submit']");
-
-        // --- 1. SAFE SAVE (MERGE STRATEGY) ---
-        function saveSnapshot() {
-            const currentData = {};
+        document.addEventListener("DOMContentLoaded", function () {
+            // --- CONFIGURATION ---
+            const FORM_STORAGE_KEY = "ie_recruitment_data_v6"; // Version 6 (Clean start)
+            // Use relative path to avoid port mismatch issues
+            const API_URL = "/api/Sync/save-offline-data"; 
             
-            // Capture all inputs on the CURRENT page
-            document.querySelectorAll("input, select, textarea").forEach(el => {
-                if (!el.name || el.type === "hidden" || el.type === "file" || el.type === "password") return;
+            const CANDIDATE_ID = document.getElementById("CandidateId")?.value;
+            const submitBtn = document.querySelector("button[type='submit']");
+            const offlineBadge = document.getElementById('offline-indicator');
+
+            // --- 1. SAFE SAVE (Include Hidden Fields for Family/Languages) ---
+            function saveLocal() {
+                const currentData = {};
                 
-                if (el.type === "checkbox") {
-                    currentData[el.name] = el.checked;
-                } else if (el.type === "radio") {
-                    if (el.checked) currentData[el.name] = el.value;
-                } else {
-                    currentData[el.name] = el.value;
-                }
-            });
-
-            // READ existing data first, then MERGE
-            let existingData = {};
-            try {
-                const raw = localStorage.getItem(FORM_STORAGE_KEY);
-                if (raw) existingData = JSON.parse(raw);
-            } catch (e) {
-                console.error("Error reading local storage", e);
-            }
-
-            // Combine old data + new data
-            const merged = { ...existingData, ...currentData };
-            
-            localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(merged));
-            console.log("💾 Data merged and saved locally.");
-        }
-
-        // --- 2. RESTORE ---
-        function restoreSnapshot() {
-            const stored = localStorage.getItem(FORM_STORAGE_KEY);
-            if (!stored) return;
-            
-            let data;
-            try { data = JSON.parse(stored); } catch(e) { return; }
-
-            document.querySelectorAll("input, select, textarea").forEach(el => {
-                if (!el.name || data[el.name] === undefined) return;
-                
-                // Don't overwrite if server (DB) has data (value is not empty)
-                // Exception: radios/checkboxes need specific checking
-                if (el.type !== "radio" && el.type !== "checkbox" && el.value && el.value.trim() !== "") return;
-
-                if (el.type === "checkbox") {
-                    el.checked = data[el.name];
-                } else if (el.type === "radio") {
-                    if (el.value == data[el.name]) el.checked = true;
-                } else {
-                    el.value = data[el.name];
-                }
-            });
-        }
-
-        // --- 3. SYNC TO DB ---
-        async function syncToDb() {
-            if (!navigator.onLine || !CANDIDATE_ID) return;
-            
-            const stored = localStorage.getItem(FORM_STORAGE_KEY);
-            if (!stored) return;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        candidateId: CANDIDATE_ID, 
-                        localStorageData: stored 
-                    })
+                // Select ALL inputs including hidden ones (except security tokens)
+                document.querySelectorAll("input, select, textarea").forEach(el => {
+                    if (!el.name || el.type === "file" || el.name === "__RequestVerificationToken") return;
+                    
+                    if (el.type === "checkbox") {
+                        currentData[el.name] = el.checked;
+                    } else if (el.type === "radio") {
+                        if (el.checked) currentData[el.name] = el.value;
+                    } else {
+                        currentData[el.name] = el.value;
+                    }
                 });
+
+                // Merge with existing data
+                let existingData = {};
+                try { existingData = JSON.parse(localStorage.getItem(FORM_STORAGE_KEY)) || {}; } catch(e){}
                 
-                if(response.ok) console.log("✅ Synced to Server DB");
-            } catch(e) {
-                console.warn("⚠️ Sync failed (API might be offline)");
+                const merged = { ...existingData, ...currentData };
+                localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(merged));
             }
-        }
 
-        // --- INITIALIZATION ---
-        restoreSnapshot();
-
-        // --- EVENT LISTENERS ---
-        
-        // 1. Save on any input change
-        document.addEventListener("input", (e) => {
-            if(e.target.matches("input, textarea, select")) saveSnapshot();
-        });
-        document.addEventListener("change", (e) => {
-            if(e.target.matches("input, textarea, select")) saveSnapshot();
-        });
-
-        // 2. CRITICAL: Save before any navigation (Next/Prev/Refresh)
-        window.addEventListener('beforeunload', () => {
-            saveSnapshot();
-        });
-
-        // 3. Handle Submit/Next Button
-        if (submitBtn) {
-            submitBtn.addEventListener('click', (e) => {
-                saveSnapshot(); // Force save
+            // --- 2. RESTORE (Trigger Events for Tables) ---
+            function restoreLocal() {
+                const stored = localStorage.getItem(FORM_STORAGE_KEY);
+                if (!stored) return;
                 
-                if (!navigator.onLine) {
-                    e.preventDefault();
-                    alert("⚠️ You are OFFLINE. Data saved locally. Please connect to internet to proceed.");
-                } else {
-                    syncToDb(); // Try to sync before form submits
-                }
-            });
-        }
+                let data;
+                try { data = JSON.parse(stored); } catch(e) { return; }
 
-        // 4. Sync when internet returns
-        window.addEventListener('online', syncToDb);
-        
-        // 5. Periodic Sync
-        setInterval(syncToDb, 10000);
-    });
-</script>
+                document.querySelectorAll("input, select, textarea").forEach(el => {
+                    if (!el.name || data[el.name] === undefined) return;
+                    
+                    // Don't overwrite non-empty fields (Server data takes priority)
+                    if (el.value && el.value.trim() !== "" && el.type !== "radio" && el.type !== "checkbox" && el.type !== "hidden") return;
+
+                    if (el.type === "checkbox") {
+                        el.checked = data[el.name];
+                    } else if (el.type === "radio") {
+                        if (el.value == data[el.name]) el.checked = true;
+                    } else {
+                        el.value = data[el.name];
+                    }
+                    
+                    // CRITICAL: Trigger events so Family/Language tables know data has changed
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    // Specific event for some JS grids
+                    if(el.type === 'hidden') {
+                         // Manually trigger any attached listeners for hidden JSON fields
+                         try { $(el).trigger('change'); } catch(e) {} 
+                    }
+                });
+            }
+
+            // --- 3. SYNC TO DB (Background) ---
+            async function syncToDb() {
+                if (!navigator.onLine || !CANDIDATE_ID) {
+                    if(offlineBadge) offlineBadge.style.display = navigator.onLine ? 'none' : 'block';
+                    return;
+                }
+                if(offlineBadge) offlineBadge.style.display = 'none';
+
+                const stored = localStorage.getItem(FORM_STORAGE_KEY);
+                if (!stored) return;
+
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            candidateId: CANDIDATE_ID, 
+                            localStorageData: stored 
+                        })
+                    });
+                    console.log("✅ [Sync] Data synced to Database");
+                } catch(e) {
+                    console.warn("⚠️ [Sync] Failed to connect to API");
+                }
+            }
+
+            // --- LISTENERS ---
+            restoreLocal();
+
+            // Save on any interaction
+            document.addEventListener("input", (e) => {
+                if(e.target.matches("input, textarea, select")) saveLocal();
+            });
+            document.addEventListener("change", (e) => {
+                if(e.target.matches("input, textarea, select")) saveLocal();
+            });
+
+            // Save before navigation
+            window.addEventListener('beforeunload', () => saveLocal());
+
+            // Handle Submit/Next
+            if (submitBtn) {
+                submitBtn.addEventListener('click', (e) => {
+                    saveLocal();
+                    if (!navigator.onLine) {
+                        e.preventDefault();
+                        alert("⚠️ You are Offline. Data saved locally.");
+                    } else {
+                        syncToDb();
+                    }
+                });
+            }
+
+            // Sync Interval
+            window.addEventListener('online', syncToDb);
+            setInterval(syncToDb, 15000);
+        });
+    </script>
     
     @RenderSection("PageScripts", required: false)
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ieRecruitment")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+722bdb5349bfd331dfed55d39855e62476f503aa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b75faa34a510448be753e4cb5ad31e453a621f34")]
 [assembly: System.Reflection.AssemblyProductAttribute("ieRecruitment")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ieRecruitment")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
